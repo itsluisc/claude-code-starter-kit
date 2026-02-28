@@ -299,9 +299,14 @@ cd claude-code-starter-kit
 bash install.sh
 ```
 
-Then restart Claude Code. Done.
+That's it. One command installs everything AND launches the onboarding experience.
 
-**Don't worry about what just happened.** The installer created some folders and copied some files. Everything is safe. Nothing was deleted. If you're curious, read the [File Structure](#file-structure) section. If not, just keep going.
+**What happens:** The installer copies your hooks and configs (silent, safe, nothing deleted) — then Jarvis comes online. 5 questions. 5 minutes. It builds your personal CLAUDE.md, tells you which MCP servers to install, and gives you the exact first command to say that will blow your mind.
+
+**Already installed?** Run the experience again anytime:
+```bash
+bash first-run.sh
+```
 
 ---
 

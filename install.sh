@@ -139,39 +139,33 @@ SETTINGS_EOF
 fi
 
 # ═══════════════════════════════════════════
-# 6. OPTIONAL: COPY CLAUDE.MD TEMPLATE
+# 6. PLUMBING DONE — LAUNCH THE EXPERIENCE
 # ═══════════════════════════════════════════
 echo ""
-read -p "📋 Copy CLAUDE.md template to current directory? (y/n) " -n 1 -r
+echo "✅ All files installed. Hooks active. Systems ready."
 echo ""
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  if [ -f "CLAUDE.md" ]; then
-    echo "   ⚠️  CLAUDE.md already exists here — saved template as CLAUDE.md.starter"
-    cp "$SCRIPT_DIR/templates/CLAUDE.md" "./CLAUDE.md.starter"
-  else
-    cp "$SCRIPT_DIR/templates/CLAUDE.md" "./CLAUDE.md"
-    echo "   ✅ CLAUDE.md template copied"
-  fi
-fi
+sleep 0.5
 
-# ═══════════════════════════════════════════
-# DONE
-# ═══════════════════════════════════════════
-echo ""
-echo "╔══════════════════════════════════════════════════════╗"
-echo "║  ✅ INSTALLATION COMPLETE                            ║"
-echo "╠══════════════════════════════════════════════════════╣"
-echo "║                                                      ║"
-echo "║  Restart Claude Code to activate hooks.              ║"
-echo "║                                                      ║"
-echo "║  What's now active:                                  ║"
-echo "║  • Sessions never die (context-survival)             ║"
-echo "║  • Weekly cost warnings (cost-guardian)              ║"
-echo "║  • Ship tracking (ship-tracker)                      ║"
-echo "║  • Auto session resume (smart-boot)                  ║"
-echo "║  • Backup enforcement (session-end-enforcer)         ║"
-echo "║                                                      ║"
-echo "║  Next: Edit ~/.claude/hooks/smart-boot.js to add     ║"
-echo "║  YOUR projects to PROJECT_MAP.                       ║"
-echo "║                                                      ║"
-echo "╚══════════════════════════════════════════════════════╝"
+# Auto-launch first-run experience (the Speed to Post moment)
+if [ -f "$SCRIPT_DIR/first-run.sh" ]; then
+  bash "$SCRIPT_DIR/first-run.sh"
+else
+  # Fallback if first-run.sh missing
+  echo "╔══════════════════════════════════════════════════════╗"
+  echo "║  ✅ INSTALLATION COMPLETE                            ║"
+  echo "╠══════════════════════════════════════════════════════╣"
+  echo "║                                                      ║"
+  echo "║  Restart Claude Code to activate hooks.              ║"
+  echo "║                                                      ║"
+  echo "║  What's now active:                                  ║"
+  echo "║  • Sessions never die (context-survival)             ║"
+  echo "║  • Weekly cost warnings (cost-guardian)              ║"
+  echo "║  • Ship tracking (ship-tracker)                      ║"
+  echo "║  • Auto session resume (smart-boot)                  ║"
+  echo "║  • Backup enforcement (session-end-enforcer)         ║"
+  echo "║                                                      ║"
+  echo "║  Next: Run 'bash first-run.sh' for the full          ║"
+  echo "║  onboarding experience.                              ║"
+  echo "║                                                      ║"
+  echo "╚══════════════════════════════════════════════════════╝"
+fi
