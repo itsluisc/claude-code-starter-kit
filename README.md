@@ -1,8 +1,69 @@
-# Claude Code Starter Kit
+```
+   _____ _                 _         ____          _
+  / ____| |               | |       / ___|___   __| | ___
+ | |    | | __ _ _   _  __| | ___  | |   / _ \ / _` |/ _ \
+ | |    | |/ _` | | | |/ _` |/ _ \ | |__| (_) | (_| |  __/
+ |  ____| | (_| | |_| | (_| |  __/  \____\___/ \__,_|\___|
+  \_____|_|\__,_|\__,_|\__,_|\___|
 
-**How Claude Code should come out of the box — but doesn't.**
+  ____  _             _              _  ___ _
+ / ___|| |_ __ _ _ __| |_ ___ _ __ | |/ (_) |_
+ \___ \| __/ _` | '__| __/ _ \ '__|| ' /| | __|
+  ___) | || (_| | |  | ||  __/ |   | . \| | |_
+ |____/ \__\__,_|_|   \__\___|_|   |_|\_\_|\__|
 
-One install. Zero pain. Your AI coding assistant actually remembers what it's doing, warns you before you burn credits, and never loses your work.
+ v1.0 — How Claude Code should come out of the box.
+```
+
+**One install. Zero pain.** Your AI assistant actually remembers what it's doing, warns you before you burn credits, and never loses your work.
+
+---
+
+## Getting Started — Onboarding Questionnaire
+
+Before you install, answer these questions. They'll shape your CLAUDE.md and make Claude Code work *for you* specifically.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║              GETTING TO KNOW YOU                             ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  1. What's your role?                                        ║
+║     [ ] Developer  [ ] Designer  [ ] Operator                ║
+║     [ ] Founder    [ ] Content Creator  [ ] Other            ║
+║                                                              ║
+║  2. What's your main stack?                                  ║
+║     Languages: ___________  Frameworks: ___________          ║
+║     Database: ____________  Hosting: ______________          ║
+║                                                              ║
+║  3. What tools do you live in?                               ║
+║     [ ] Notion   [ ] Obsidian  [ ] Linear  [ ] Jira         ║
+║     [ ] Slack    [ ] Discord   [ ] Gmail   [ ] Outlook      ║
+║     [ ] Figma    [ ] VS Code   [ ] Cursor  [ ] Other        ║
+║                                                              ║
+║  4. What's your OS?                                          ║
+║     [ ] macOS    [ ] Windows (WSL2)  [ ] Linux               ║
+║                                                              ║
+║  5. What annoys you most about AI coding tools?              ║
+║     [ ] Losing context / session dies                        ║
+║     [ ] Walls of text I can't scan                           ║
+║     [ ] Burning credits too fast                             ║
+║     [ ] Doesn't remember what I told it                      ║
+║     [ ] Have to repeat myself constantly                     ║
+║     [ ] All of the above                                     ║
+║                                                              ║
+║  6. Personality (optional but powerful):                      ║
+║     Myers-Briggs: ____ (take: 16personalities.com)           ║
+║     VARK Learning Style: V__ A__ R__ K__                     ║
+║       (take: vark-learn.com/the-vark-questionnaire)          ║
+║     DISC: ____ (D/I/S/C)                                     ║
+║     Communication style: [ ] Direct  [ ] Detailed            ║
+║                           [ ] Casual  [ ] Structured         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+After answering, paste your answers into your `CLAUDE.md` under `## About Me`. Claude will adapt its output style, communication, and format to match YOU.
 
 ---
 
