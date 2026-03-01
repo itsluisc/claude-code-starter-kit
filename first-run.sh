@@ -130,8 +130,27 @@ if [ -z "$USER_HATES" ]; then
 fi
 
 echo ""
-echo -e "${GREEN}Perfect. Every single one of those? Dead. We're killing them.${RESET}"
-sleep 0.8
+sleep 0.5
+
+# ═══════════════════════════════════════════
+# THE PAIN MIRROR (Maria Wendt + Blair Warren)
+# Justify failures → Confirm suspicions → Encourage dreams
+# ═══════════════════════════════════════════
+
+echo -e "${BOLD}Here's what nobody told you:${RESET}"
+echo ""
+sleep 0.3
+echo -e "  ${DIM}It's not that you're bad at this.${RESET}"
+echo -e "  ${DIM}It's that the tools to fix it didn't exist until right now.${RESET}"
+sleep 0.5
+echo ""
+echo -e "  ${BOLD}You were right${RESET} — there IS a better way."
+echo -e "  ${DIM}Everyone who told you \"that's just how it is\" was wrong.${RESET}"
+sleep 0.5
+echo ""
+echo -e "  ${GREEN}${BOLD}Every single thing you just described? Dead.${RESET}"
+echo -e "  ${GREEN}We're killing them. Today.${RESET}"
+sleep 1
 echo ""
 
 # ═══════════════════════════════════════════
@@ -240,7 +259,7 @@ case $DEPTH_NUM in
 esac
 
 echo ""
-echo -e "${GREEN}${DEPTH_DESC}. That's how Jarvis will talk from now on.${RESET}"
+echo -e "${GREEN}${DEPTH_DESC}. That's how Claude will talk to you from now on.${RESET}"
 sleep 0.5
 echo ""
 
@@ -250,7 +269,7 @@ echo ""
 
 echo -e "${CYAN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
-echo -e "${BOLD}Building your personal Jarvis configuration...${RESET}"
+echo -e "${BOLD}Building your personal AI configuration...${RESET}"
 sleep 0.5
 
 # Build the About Me section
@@ -384,42 +403,53 @@ echo ""
 
 sleep 0.5
 
-echo -e "${BOLD}${GREEN}"
-cat << 'READY'
+# ═══════════════════════════════════════════
+# VERIFICATION TABLE (Dave: prove it worked)
+# ═══════════════════════════════════════════
 
-  ╔═══════════════════════════════════════════════════╗
-  ║                                                   ║
-  ║   You're ready.                                   ║
-  ║                                                   ║
-  ║   Jarvis is online. The suit is on.               ║
-  ║   Everything is backed up. Nothing will break.    ║
-  ║   Sessions never die. Work is never lost.         ║
-  ║                                                   ║
-  ╚═══════════════════════════════════════════════════╝
-
-READY
-echo -e "${RESET}"
-
+echo -e "${BOLD}Here's what just happened:${RESET}"
+echo ""
+echo -e "  ✅ Your profile saved"
+echo -e "  ✅ Communication style set to: ${DEPTH_DESC}"
+echo -e "  ✅ Context survival — sessions never die"
+echo -e "  ✅ Auto-save every 10 actions — work is never lost"
+echo -e "  ✅ Cost guardian — spending alerts built in"
+if [ $MCP_COUNT -gt 0 ]; then
+  echo -e "  ✅ ${MCP_COUNT} tool connections ready to configure"
+fi
+echo ""
 sleep 1
 
-echo -e "${BOLD}Now open Claude Code and say this:${RESET}"
+# ═══════════════════════════════════════════
+# ALLAY FEARS (Blair Warren)
+# ═══════════════════════════════════════════
+
+echo -e "${GREEN}${BOLD}Nothing breaks. Everything saves. Sessions never die.${RESET}"
+echo -e "${DIM}That's not a promise — it's how the system is built.${RESET}"
 echo ""
+sleep 0.8
+
+# ═══════════════════════════════════════════
+# THE FIRST COMMAND — Zero gap to first win (Ryan Magin)
+# ═══════════════════════════════════════════
 
 # Personalized first command based on their tools
 if $USE_GMAIL; then
   FIRST_CMD="Read my emails and tell me what's urgent."
-  FIRST_WHAT="Claude will open your Gmail, scan every unread email, and give you a priority list. In 30 seconds."
+  FIRST_WHAT="It will open your Gmail, scan every unread email, and give you a priority list. In 30 seconds."
 elif $USE_GCAL; then
   FIRST_CMD="What's on my calendar today? What should I focus on?"
-  FIRST_WHAT="Claude will read your calendar and tell you exactly how to spend your day."
+  FIRST_WHAT="It will read your calendar and tell you exactly how to spend your day."
 elif $USE_NOTION; then
   FIRST_CMD="Look at my Notion and tell me what I should work on today."
-  FIRST_WHAT="Claude will scan your workspace and find your priorities."
+  FIRST_WHAT="It will scan your workspace and find your priorities."
 else
   FIRST_CMD="Here's what I do every day: ${USER_HATES}. Help me automate the worst one."
-  FIRST_WHAT="Claude will pick your most painful task and build a solution. Right now. In front of you."
+  FIRST_WHAT="It will pick your most painful task and build a solution. Right now. In front of you."
 fi
 
+echo -e "${BOLD}Now open Claude Code and say this:${RESET}"
+echo ""
 echo -e "  ${MAGENTA}${BOLD}\"${FIRST_CMD}\"${RESET}"
 echo ""
 echo -e "  ${DIM}${FIRST_WHAT}${RESET}"
@@ -427,11 +457,16 @@ echo ""
 
 sleep 0.5
 
+# ═══════════════════════════════════════════
+# THROW ROCKS AT ENEMIES (Blair Warren)
+# ═══════════════════════════════════════════
+
 echo -e "${BOLD}Then try this:${RESET}"
 echo ""
 echo -e "  ${MAGENTA}${BOLD}\"What else can you do that would blow my mind?\"${RESET}"
 echo ""
-echo -e "  ${DIM}You're about to find out why people say they can't live without this.${RESET}"
+echo -e "  ${DIM}While everyone else is still doing it by hand,${RESET}"
+echo -e "  ${DIM}you just got an assistant that never sleeps.${RESET}"
 echo ""
 
 sleep 0.5
@@ -443,8 +478,8 @@ sleep 0.5
 echo -e "${CYAN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
 echo -e "${DIM}The full manual is in README.md — read it when you're curious.${RESET}"
-echo -e "${DIM}But you don't need it right now. Just go talk to Jarvis.${RESET}"
+echo -e "${DIM}But you don't need it right now. Just open Claude Code and talk.${RESET}"
 echo ""
-echo -e "${BOLD}Welcome to the lab, ${USER_NAME}.${RESET}"
-echo -e "${BOLD}Suit up. Build something dangerous.${RESET}"
+echo -e "${BOLD}Welcome, ${USER_NAME}. Your AI assistant is ready.${RESET}"
+echo -e "${BOLD}Go build something dangerous.${RESET}"
 echo ""
