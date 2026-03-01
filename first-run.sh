@@ -34,14 +34,15 @@ if [ ! -t 0 ]; then
   exit 1
 fi
 
-# Colors
+# Colors — Anthropic warm palette (not cold blue)
 BOLD='\033[1m'
 DIM='\033[2m'
-CYAN='\033[36m'
+ORANGE='\033[38;5;208m'
 GREEN='\033[32m'
 YELLOW='\033[33m'
 MAGENTA='\033[35m'
 RED='\033[31m'
+CYAN='\033[36m'
 RESET='\033[0m'
 
 clear
@@ -51,7 +52,7 @@ clear
 # ═══════════════════════════════════════════
 
 echo ""
-echo -e "${CYAN}${BOLD}"
+echo -e "${ORANGE}${BOLD}"
 cat << 'LOGO'
 
    ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗
@@ -88,7 +89,7 @@ sleep 1
 # QUESTION 1: WHO ARE YOU?
 # ═══════════════════════════════════════════
 
-echo -e "${CYAN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
 echo -e "${BOLD}Hey. Welcome to Claude Code.${RESET}"
 echo ""
@@ -110,7 +111,7 @@ echo ""
 # QUESTION 2: WHAT DO YOU HATE DOING?
 # ═══════════════════════════════════════════
 
-echo -e "${CYAN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
 echo -e "${BOLD}Now the real question.${RESET}"
 echo ""
@@ -140,97 +141,58 @@ sleep 0.5
 # Justify failures → Confirm suspicions → Encourage dreams
 # ═══════════════════════════════════════════
 
-echo -e "  ${RED}${BOLD}\"${USER_HATES}\"${RESET}"
+echo -e "  ${ORANGE}${BOLD}\"${USER_HATES}\"${RESET}"
 echo ""
+sleep 0.5
+echo -e "  ${BOLD}Yeah. I heard you.${RESET}"
 sleep 0.3
-echo -e "  ${DIM}That's hours of your life — every single week — you're never getting back.${RESET}"
-sleep 0.3
-echo -e "  ${DIM}And it's not that you're bad at it.${RESET}"
-echo -e "  ${DIM}The tools to fix it didn't exist until right now.${RESET}"
+echo ""
+echo -e "  That's the kind of stuff that eats your whole day —"
+echo -e "  not because it's hard, but because ${BOLD}it shouldn't be yours anymore.${RESET}"
 sleep 0.5
 echo ""
-echo -e "  ${BOLD}You were right${RESET} — there IS a better way."
-echo -e "  ${DIM}Everyone who told you \"that's just how it is\" was wrong.${RESET}"
+echo -e "  ${DIM}And honestly? It's not your fault.${RESET}"
+echo -e "  ${DIM}Until right now, the tools to fix this didn't exist.${RESET}"
 sleep 0.5
 echo ""
 echo -e "  ${GREEN}${BOLD}\"${USER_HATES}\"?${RESET}"
-echo -e "  ${GREEN}Starting today — that's over. We're killing it.${RESET}"
+echo -e "  ${GREEN}That's not your problem anymore. We're fixing it. Today.${RESET}"
 sleep 1
 echo ""
 
 # ═══════════════════════════════════════════
-# QUESTION 3: MAC OR WINDOWS?
+# PLATFORM AUTO-DETECT (no question needed)
 # ═══════════════════════════════════════════
 
-echo -e "${CYAN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo ""
-echo -e "${BOLD}Quick one — what are you running?${RESET}"
-echo ""
-echo -e "  ${BOLD}1${RESET}) Mac"
-echo -e "  ${BOLD}2${RESET}) Windows"
-echo -e "  ${BOLD}3${RESET}) Linux"
-echo ""
-echo -ne "${YELLOW}Pick a number (1/2/3): ${RESET}"
-read PLATFORM_NUM
-
-case $PLATFORM_NUM in
-  1) PLATFORM="macOS" ;;
-  2) PLATFORM="Windows" ;;
-  3) PLATFORM="Linux" ;;
+case "$(uname -s 2>/dev/null)" in
+  Darwin) PLATFORM="macOS" ;;
+  Linux)  PLATFORM="Linux" ;;
+  MINGW*|MSYS*|CYGWIN*) PLATFORM="Windows" ;;
   *) PLATFORM="macOS" ;;
 esac
 
+# ═══════════════════════════════════════════
+# THE MAGIC MOMENT: AUTO-DETECT YOUR APPS
+# Steve Jobs reveal. Scan first. Show what we found.
+# ═══════════════════════════════════════════
+
+echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
-echo -e "${GREEN}${PLATFORM}. Noted.${RESET}"
+echo -e "${BOLD}Now here's where it gets interesting.${RESET}"
+echo ""
+echo -e "Claude doesn't just answer questions."
+echo -e "It connects ${BOLD}directly${RESET} to your apps. Live. Not copy-paste."
+echo ""
 sleep 0.5
+echo -e "${BOLD}Give me one second...${RESET}"
 echo ""
+sleep 0.3
+echo -ne "  ${DIM}Scanning your ${PLATFORM}"
+sleep 0.3; echo -ne "."; sleep 0.3; echo -ne "."; sleep 0.3; echo -e ".${RESET}"
+echo ""
+sleep 0.5
 
-# ═══════════════════════════════════════════
-# QUESTION 4: WHAT TOOLS DO YOU ALREADY USE?
-# ═══════════════════════════════════════════
-
-echo -e "${CYAN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo ""
-echo -e "${BOLD}Here's what most people don't know:${RESET}"
-echo -e "Claude connects ${BOLD}directly${RESET} to your apps. Not copy-paste. ${BOLD}Live access.${RESET}"
-echo ""
-echo -e "${DIM}Look at everything that's possible:${RESET}"
-echo ""
-echo -e "  ${CYAN}${BOLD}EMAIL & COMMUNICATION${RESET}"
-echo -e "   1) Gmail               2) Slack               3) Discord"
-echo ""
-echo -e "  ${CYAN}${BOLD}PRODUCTIVITY${RESET}"
-echo -e "   4) Notion              5) Asana               6) Linear"
-echo -e "   7) Todoist             8) Trello              9) Jira"
-echo ""
-echo -e "  ${CYAN}${BOLD}CALENDAR & STORAGE${RESET}"
-echo -e "  10) Google Calendar    11) Google Drive        12) Dropbox"
-echo ""
-echo -e "  ${CYAN}${BOLD}DEVELOPER & DESIGN${RESET}"
-echo -e "  13) GitHub             14) GitLab             15) Figma"
-echo ""
-echo -e "  ${CYAN}${BOLD}BUSINESS & MONEY${RESET}"
-echo -e "  16) Stripe             17) QuickBooks         18) HubSpot"
-echo ""
-echo -e "  ${CYAN}${BOLD}SOCIAL & CONTENT${RESET}"
-echo -e "  19) YouTube            20) Twitter/X"
-echo ""
-echo -e "  ${CYAN}${BOLD}AUTOMATION${RESET}"
-echo -e "  21) Zapier             22) Make               23) Airtable"
-echo ""
-echo -e "${DIM}Pick numbers separated by spaces, or type '${RESET}${BOLD}all${RESET}${DIM}' to connect everything.${RESET}"
-echo -e "${DIM}Don't worry — you can always add more later.${RESET}"
-echo ""
-echo -ne "${YELLOW}Your apps (e.g. 1 4 10 13 or 'all'): ${RESET}"
-read TOOLS_INPUT
-
-# Handle "all" / "ALL" / "everything" — natural language input
-TOOLS_LOWER=$(echo "$TOOLS_INPUT" | tr '[:upper:]' '[:lower:]')
-if [[ "$TOOLS_LOWER" == *"all"* ]] || [[ "$TOOLS_LOWER" == *"every"* ]]; then
-  TOOLS_INPUT="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23"
-fi
-
-# Parse tool selections
+# Initialize all tool flags
 USE_GMAIL=false; USE_SLACK=false; USE_DISCORD=false
 USE_NOTION=false; USE_ASANA=false; USE_LINEAR=false
 USE_TODOIST=false; USE_TRELLO=false; USE_JIRA=false
@@ -241,46 +203,103 @@ USE_YOUTUBE=false; USE_TWITTER=false
 USE_ZAPIER=false; USE_MAKE=false; USE_AIRTABLE=false
 MCP_LIST=""
 MCP_COUNT=0
+DETECTED_NAMES=""
 
-for num in $TOOLS_INPUT; do
-  case $num in
-    1)  USE_GMAIL=true;      MCP_LIST="${MCP_LIST}\n  - Gmail (read, search, draft emails)"; ((MCP_COUNT++)) ;;
-    2)  USE_SLACK=true;      MCP_LIST="${MCP_LIST}\n  - Slack (channels, messages, threads)"; ((MCP_COUNT++)) ;;
-    3)  USE_DISCORD=true;    MCP_LIST="${MCP_LIST}\n  - Discord (servers, channels, messages)"; ((MCP_COUNT++)) ;;
-    4)  USE_NOTION=true;     MCP_LIST="${MCP_LIST}\n  - Notion (pages, databases, wikis)"; ((MCP_COUNT++)) ;;
-    5)  USE_ASANA=true;      MCP_LIST="${MCP_LIST}\n  - Asana (tasks, projects, goals)"; ((MCP_COUNT++)) ;;
-    6)  USE_LINEAR=true;     MCP_LIST="${MCP_LIST}\n  - Linear (issues, projects, cycles)"; ((MCP_COUNT++)) ;;
-    7)  USE_TODOIST=true;    MCP_LIST="${MCP_LIST}\n  - Todoist (tasks, projects)"; ((MCP_COUNT++)) ;;
-    8)  USE_TRELLO=true;     MCP_LIST="${MCP_LIST}\n  - Trello (boards, cards, lists)"; ((MCP_COUNT++)) ;;
-    9)  USE_JIRA=true;       MCP_LIST="${MCP_LIST}\n  - Jira (issues, sprints, boards)"; ((MCP_COUNT++)) ;;
-    10) USE_GCAL=true;       MCP_LIST="${MCP_LIST}\n  - Google Calendar (events, scheduling)"; ((MCP_COUNT++)) ;;
-    11) USE_GDRIVE=true;     MCP_LIST="${MCP_LIST}\n  - Google Drive (files, folders, sharing)"; ((MCP_COUNT++)) ;;
-    12) USE_DROPBOX=true;    MCP_LIST="${MCP_LIST}\n  - Dropbox (files, folders)"; ((MCP_COUNT++)) ;;
-    13) USE_GITHUB=true;     MCP_LIST="${MCP_LIST}\n  - GitHub (repos, PRs, issues, code)"; ((MCP_COUNT++)) ;;
-    14) USE_GITLAB=true;     MCP_LIST="${MCP_LIST}\n  - GitLab (repos, MRs, pipelines)"; ((MCP_COUNT++)) ;;
-    15) USE_FIGMA=true;      MCP_LIST="${MCP_LIST}\n  - Figma (designs, components, files)"; ((MCP_COUNT++)) ;;
-    16) USE_STRIPE=true;     MCP_LIST="${MCP_LIST}\n  - Stripe (payments, subscriptions, invoices)"; ((MCP_COUNT++)) ;;
-    17) USE_QUICKBOOKS=true; MCP_LIST="${MCP_LIST}\n  - QuickBooks (accounting, invoices)"; ((MCP_COUNT++)) ;;
-    18) USE_HUBSPOT=true;    MCP_LIST="${MCP_LIST}\n  - HubSpot (CRM, contacts, deals)"; ((MCP_COUNT++)) ;;
-    19) USE_YOUTUBE=true;    MCP_LIST="${MCP_LIST}\n  - YouTube (transcripts, analytics)"; ((MCP_COUNT++)) ;;
-    20) USE_TWITTER=true;    MCP_LIST="${MCP_LIST}\n  - Twitter/X (posts, search, trends)"; ((MCP_COUNT++)) ;;
-    21) USE_ZAPIER=true;     MCP_LIST="${MCP_LIST}\n  - Zapier (5000+ app automations)"; ((MCP_COUNT++)) ;;
-    22) USE_MAKE=true;       MCP_LIST="${MCP_LIST}\n  - Make (workflow automations)"; ((MCP_COUNT++)) ;;
-    23) USE_AIRTABLE=true;   MCP_LIST="${MCP_LIST}\n  - Airtable (databases, views, automations)"; ((MCP_COUNT++)) ;;
-  esac
-done
+add_detected() {
+  local display="$1" desc="$2"
+  DETECTED_NAMES="${DETECTED_NAMES}${display}\n"
+  MCP_LIST="${MCP_LIST}\n  - ${display} (${desc})"
+  ((MCP_COUNT++))
+}
 
-echo ""
+# ── macOS: Scan /Applications/ ──
+if [ "$PLATFORM" = "macOS" ]; then
+  [ -d "/Applications/Notion.app" ]   && USE_NOTION=true   && add_detected "Notion" "pages, databases, wikis"
+  [ -d "/Applications/Slack.app" ]    && USE_SLACK=true    && add_detected "Slack" "channels, messages, threads"
+  [ -d "/Applications/Discord.app" ]  && USE_DISCORD=true  && add_detected "Discord" "servers, channels, messages"
+  [ -d "/Applications/Figma.app" ]    && USE_FIGMA=true    && add_detected "Figma" "designs, components, files"
+  [ -d "/Applications/Todoist.app" ]  && USE_TODOIST=true  && add_detected "Todoist" "tasks, projects"
+  [ -d "/Applications/Trello.app" ]   && USE_TRELLO=true   && add_detected "Trello" "boards, cards, lists"
+  [ -d "/Applications/Asana.app" ]    && USE_ASANA=true    && add_detected "Asana" "tasks, projects, goals"
+  [ -d "/Applications/Linear.app" ]   && USE_LINEAR=true   && add_detected "Linear" "issues, projects, cycles"
+  [ -d "/Applications/Dropbox.app" ]  && USE_DROPBOX=true  && add_detected "Dropbox" "files, folders"
+
+  # Google Chrome = likely Google Workspace user
+  if [ -d "/Applications/Google Chrome.app" ]; then
+    USE_GMAIL=true;  add_detected "Gmail" "read, search, draft emails"
+    USE_GCAL=true;   add_detected "Google Calendar" "events, scheduling"
+    USE_GDRIVE=true; add_detected "Google Drive" "files, folders, sharing"
+  fi
+fi
+
+# ── CLI tools (cross-platform) ──
+if command -v gh &>/dev/null; then
+  USE_GITHUB=true && add_detected "GitHub" "repos, PRs, issues, code"
+elif command -v git &>/dev/null; then
+  git remote -v 2>/dev/null | grep -qi "github" && USE_GITHUB=true && add_detected "GitHub" "repos, PRs, issues, code"
+fi
+command -v stripe &>/dev/null && USE_STRIPE=true && add_detected "Stripe" "payments, subscriptions, invoices"
+
+# ── Existing MCP servers already configured ──
+if [ -f "$HOME/.claude/settings.json" ]; then
+  grep -qi '"gmail"' "$HOME/.claude/settings.json" 2>/dev/null && [ "$USE_GMAIL" = false ] && USE_GMAIL=true && add_detected "Gmail" "read, search, draft emails"
+  grep -qi '"notion"' "$HOME/.claude/settings.json" 2>/dev/null && [ "$USE_NOTION" = false ] && USE_NOTION=true && add_detected "Notion" "pages, databases, wikis"
+  grep -qi '"slack"' "$HOME/.claude/settings.json" 2>/dev/null && [ "$USE_SLACK" = false ] && USE_SLACK=true && add_detected "Slack" "channels, messages, threads"
+fi
+
+# ═══════════════════════════════════════════
+# THE REVEAL
+# ═══════════════════════════════════════════
+
 if [ $MCP_COUNT -gt 0 ]; then
-  if [ $MCP_COUNT -ge 15 ]; then
-    echo -e "${GREEN}${BOLD}${MCP_COUNT} apps. You're about to be dangerous.${RESET}"
-  elif [ $MCP_COUNT -ge 5 ]; then
-    echo -e "${GREEN}${BOLD}${MCP_COUNT} apps. Claude connects to all of them.${RESET}"
+  echo -e "  ${ORANGE}${BOLD}Found ${MCP_COUNT} apps on your machine:${RESET}"
+  echo ""
+  echo -e "$DETECTED_NAMES" | while IFS= read -r app; do
+    [ -n "$app" ] && echo -e "    ${GREEN}✓${RESET} ${app}" && sleep 0.1
+  done
+  echo ""
+  sleep 0.5
+  echo -e "  ${BOLD}Claude can talk to every single one of these.${RESET}"
+  echo -e "  ${DIM}Read your email. Check your calendar. Update your Notion.${RESET}"
+  echo -e "  ${DIM}All from the terminal. All in real time.${RESET}"
+  echo ""
+  sleep 0.5
+  echo -ne "  ${YELLOW}Connect everything? (Y/n): ${RESET}"
+  read CONNECT_YN
+  CONNECT_YN=$(echo "$CONNECT_YN" | tr '[:upper:]' '[:lower:]')
+  if [ "$CONNECT_YN" = "n" ] || [ "$CONNECT_YN" = "no" ]; then
+    echo -e "  ${DIM}No problem — connect anytime by telling Claude.${RESET}"
+    MCP_COUNT=0
   else
-    echo -e "${GREEN}${MCP_COUNT} apps. Good start — you can always add more.${RESET}"
+    echo -e "  ${GREEN}${BOLD}All ${MCP_COUNT} apps. Let's go.${RESET}"
   fi
 else
-  echo -e "${GREEN}No worries. You can connect apps anytime.${RESET}"
+  echo -e "  ${DIM}No apps detected automatically — no worries.${RESET}"
+  echo -e "  ${DIM}Tell Claude \"connect my Gmail\" anytime and it walks you through it.${RESET}"
+fi
+
+echo ""
+echo -e "${DIM}Anything else you use that I missed? (type names or Enter to skip)${RESET}"
+echo -ne "${YELLOW}Other apps: ${RESET}"
+read EXTRA_APPS
+if [ -n "$EXTRA_APPS" ]; then
+  EX=$(echo "$EXTRA_APPS" | tr '[:upper:]' '[:lower:]')
+  [[ "$EX" == *"gmail"* ]]     && [ "$USE_GMAIL" = false ]    && USE_GMAIL=true    && add_detected "Gmail" "read, search, draft emails"
+  [[ "$EX" == *"notion"* ]]    && [ "$USE_NOTION" = false ]   && USE_NOTION=true   && add_detected "Notion" "pages, databases, wikis"
+  [[ "$EX" == *"slack"* ]]     && [ "$USE_SLACK" = false ]    && USE_SLACK=true    && add_detected "Slack" "channels, messages, threads"
+  [[ "$EX" == *"github"* ]]    && [ "$USE_GITHUB" = false ]   && USE_GITHUB=true   && add_detected "GitHub" "repos, PRs, issues, code"
+  [[ "$EX" == *"calendar"* ]]  && [ "$USE_GCAL" = false ]     && USE_GCAL=true     && add_detected "Google Calendar" "events, scheduling"
+  [[ "$EX" == *"drive"* ]]     && [ "$USE_GDRIVE" = false ]   && USE_GDRIVE=true   && add_detected "Google Drive" "files, folders, sharing"
+  [[ "$EX" == *"discord"* ]]   && [ "$USE_DISCORD" = false ]  && USE_DISCORD=true  && add_detected "Discord" "servers, channels, messages"
+  [[ "$EX" == *"figma"* ]]     && [ "$USE_FIGMA" = false ]    && USE_FIGMA=true    && add_detected "Figma" "designs, components, files"
+  [[ "$EX" == *"asana"* ]]     && [ "$USE_ASANA" = false ]    && USE_ASANA=true    && add_detected "Asana" "tasks, projects, goals"
+  [[ "$EX" == *"stripe"* ]]    && [ "$USE_STRIPE" = false ]   && USE_STRIPE=true   && add_detected "Stripe" "payments, subscriptions, invoices"
+  [[ "$EX" == *"youtube"* ]]   && [ "$USE_YOUTUBE" = false ]  && USE_YOUTUBE=true  && add_detected "YouTube" "transcripts, analytics"
+  [[ "$EX" == *"trello"* ]]    && [ "$USE_TRELLO" = false ]   && USE_TRELLO=true   && add_detected "Trello" "boards, cards, lists"
+  [[ "$EX" == *"hubspot"* ]]   && [ "$USE_HUBSPOT" = false ]  && USE_HUBSPOT=true  && add_detected "HubSpot" "CRM, contacts, deals"
+  [[ "$EX" == *"airtable"* ]]  && [ "$USE_AIRTABLE" = false ] && USE_AIRTABLE=true && add_detected "Airtable" "databases, views, automations"
+  [[ "$EX" == *"zapier"* ]]    && [ "$USE_ZAPIER" = false ]   && USE_ZAPIER=true   && add_detected "Zapier" "5000+ app automations"
+  echo -e "  ${GREEN}Added.${RESET}"
 fi
 sleep 0.5
 echo ""
@@ -289,7 +308,7 @@ echo ""
 # QUESTION 5: HOW DEEP?
 # ═══════════════════════════════════════════
 
-echo -e "${CYAN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
 echo -e "${BOLD}Last one. How do you want Claude to talk to you?${RESET}"
 echo ""
@@ -316,7 +335,7 @@ echo ""
 # BUILD CLAUDE.MD FROM ANSWERS
 # ═══════════════════════════════════════════
 
-echo -e "${CYAN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
 echo -e "${BOLD}Building your personal AI configuration...${RESET}"
 sleep 0.5
@@ -416,74 +435,11 @@ sleep 0.3
 
 if [ $MCP_COUNT -gt 0 ]; then
   echo ""
-  echo -e "${BOLD}Your app connections:${RESET}"
-  echo -e "${DIM}These are the MCP commands to connect each app. Copy and run in terminal.${RESET}"
+  echo -e "${BOLD}To connect your apps, just tell Claude:${RESET}"
   echo ""
-
-  # Tier 1: Official Anthropic MCP servers (one-command install)
-  TIER1_COUNT=0
-  if $USE_GMAIL; then
-    echo -e "  ${CYAN}claude mcp add gmail -- npx @anthropic/claude-gmail-mcp${RESET}"
-    ((TIER1_COUNT++))
-  fi
-  if $USE_GCAL; then
-    echo -e "  ${CYAN}claude mcp add gcal -- npx @anthropic/claude-google-calendar-mcp${RESET}"
-    ((TIER1_COUNT++))
-  fi
-  if $USE_NOTION; then
-    echo -e "  ${CYAN}claude mcp add notion -- npx @anthropic/claude-notion-mcp${RESET}"
-    ((TIER1_COUNT++))
-  fi
-  if $USE_GDRIVE; then
-    echo -e "  ${CYAN}claude mcp add gdrive -- npx @anthropic/claude-google-drive-mcp${RESET}"
-    ((TIER1_COUNT++))
-  fi
-  if $USE_SLACK; then
-    echo -e "  ${CYAN}claude mcp add slack -- npx @anthropic/claude-slack-mcp${RESET}"
-    ((TIER1_COUNT++))
-  fi
-  if $USE_GITHUB; then
-    echo -e "  ${CYAN}claude mcp add github -- npx @anthropic/claude-github-mcp${RESET}"
-    ((TIER1_COUNT++))
-  fi
-  if $USE_ASANA; then
-    echo -e "  ${CYAN}claude mcp add asana -- npx @anthropic/claude-asana-mcp${RESET}"
-    ((TIER1_COUNT++))
-  fi
-  if $USE_LINEAR; then
-    echo -e "  ${CYAN}claude mcp add linear -- npx @anthropic/claude-linear-mcp${RESET}"
-    ((TIER1_COUNT++))
-  fi
-
-  # Tier 2: Community MCP servers (setup guide needed)
-  TIER2_APPS=""
-  if $USE_DISCORD; then TIER2_APPS="${TIER2_APPS} Discord"; fi
-  if $USE_TODOIST; then TIER2_APPS="${TIER2_APPS} Todoist"; fi
-  if $USE_TRELLO; then TIER2_APPS="${TIER2_APPS} Trello"; fi
-  if $USE_JIRA; then TIER2_APPS="${TIER2_APPS} Jira"; fi
-  if $USE_DROPBOX; then TIER2_APPS="${TIER2_APPS} Dropbox"; fi
-  if $USE_GITLAB; then TIER2_APPS="${TIER2_APPS} GitLab"; fi
-  if $USE_FIGMA; then TIER2_APPS="${TIER2_APPS} Figma"; fi
-  if $USE_STRIPE; then TIER2_APPS="${TIER2_APPS} Stripe"; fi
-  if $USE_QUICKBOOKS; then TIER2_APPS="${TIER2_APPS} QuickBooks"; fi
-  if $USE_HUBSPOT; then TIER2_APPS="${TIER2_APPS} HubSpot"; fi
-  if $USE_YOUTUBE; then TIER2_APPS="${TIER2_APPS} YouTube"; fi
-  if $USE_TWITTER; then TIER2_APPS="${TIER2_APPS} Twitter/X"; fi
-  if $USE_ZAPIER; then TIER2_APPS="${TIER2_APPS} Zapier"; fi
-  if $USE_MAKE; then TIER2_APPS="${TIER2_APPS} Make"; fi
-  if $USE_AIRTABLE; then TIER2_APPS="${TIER2_APPS} Airtable"; fi
-
-  if [ -n "$TIER2_APPS" ]; then
-    echo ""
-    echo -e "  ${DIM}These need community MCP setup (ask Claude how):${RESET}"
-    echo -e "  ${DIM} ${TIER2_APPS}${RESET}"
-  fi
-
+  echo -e "  ${MAGENTA}\"Connect my Gmail\"${RESET}  ${DIM}or${RESET}  ${MAGENTA}\"Set up Notion\"${RESET}  ${DIM}or${RESET}  ${MAGENTA}\"Connect all my apps\"${RESET}"
   echo ""
-  if [ $TIER1_COUNT -gt 0 ]; then
-    echo -e "${DIM}Copy and run each command above. Takes 30 seconds each.${RESET}"
-  fi
-  echo -e "${DIM}Pro tip: Just tell Claude \"connect my Gmail\" and it walks you through it.${RESET}"
+  echo -e "${DIM}Claude walks you through each one. No commands to memorize.${RESET}"
 fi
 
 sleep 0.5
@@ -493,7 +449,7 @@ sleep 0.5
 # ═══════════════════════════════════════════
 
 echo ""
-echo -e "${CYAN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
 
 sleep 0.5
@@ -570,7 +526,7 @@ sleep 0.5
 # SIGN-OFF
 # ═══════════════════════════════════════════
 
-echo -e "${CYAN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
 echo -e "${DIM}The full manual is in README.md — read it when you're curious.${RESET}"
 echo -e "${DIM}But you don't need it right now.${RESET}"
