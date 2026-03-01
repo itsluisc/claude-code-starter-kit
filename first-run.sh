@@ -539,52 +539,78 @@ sleep 0.8
 # THE FIRST COMMAND — Zero gap to first win (Ryan Magin)
 # ═══════════════════════════════════════════
 
-# FIRST COMMAND = THEIR PAIN (Steve Jobs: the product solves YOUR problem)
-# The user told us what they hate. That's the first thing Claude fixes.
-echo -e "${BOLD}Open Claude Code and say exactly this:${RESET}"
-echo ""
-echo -e "  ${MAGENTA}${BOLD}\"I hate ${USER_HATES}. Fix this for me.\"${RESET}"
-echo ""
-echo -e "  ${DIM}Claude will ask you a few questions, then build a solution.${RESET}"
-echo -e "  ${DIM}Not a suggestion. An actual working system. Watch.${RESET}"
-echo ""
-
-sleep 0.5
-
-# Second command — use their actual tools
-SECOND_CMD=""
-if $USE_GMAIL; then
-  SECOND_CMD="Read my last 20 emails and tell me what actually needs my attention."
-elif $USE_GCAL; then
-  SECOND_CMD="Look at my calendar this week and tell me where I'm wasting time."
-elif $USE_NOTION; then
-  SECOND_CMD="Look at my Notion and tell me what I should work on right now."
-elif $USE_GITHUB; then
-  SECOND_CMD="Look at my repos and tell me what needs attention."
-fi
-
-if [ -n "$SECOND_CMD" ]; then
-  echo -e "${BOLD}Then try:${RESET}"
-  echo ""
-  echo -e "  ${MAGENTA}${BOLD}\"${SECOND_CMD}\"${RESET}"
-  echo ""
-fi
-
-sleep 0.5
-
 # ═══════════════════════════════════════════
-# SIGN-OFF
+# THE LAUNCH — Zero gap to first win
+# Don't tell them to "open Claude Code."
+# OPEN IT FOR THEM. Copy their first command. Go.
 # ═══════════════════════════════════════════
 
-echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo ""
+FIRST_PROMPT="I hate ${USER_HATES}. Fix this for me. Build me a system that handles this automatically."
+
 echo -e "${BOLD}One more thing, ${USER_NAME}.${RESET}"
 echo ""
 echo -e "Talk to Claude like a friend. Not keywords. Just say what you need."
 echo ""
-echo -e "${DIM}\"I hate doing this manually. Build me something.\"${RESET}"
-echo -e "${DIM}\"What can you do that would blow my mind?\"${RESET}"
-echo ""
 sleep 0.5
-echo -e "${GREEN}${BOLD}Welcome, ${USER_NAME}. Go build something dangerous.${RESET}"
+
+echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
+
+if command -v claude &>/dev/null; then
+  # Claude Code exists — offer to launch it RIGHT NOW
+  echo -e "${GREEN}${BOLD}Ready to see it work?${RESET}"
+  echo ""
+  echo -e "I'm going to open Claude Code and paste your first command:"
+  echo ""
+  echo -e "  ${MAGENTA}${BOLD}\"${FIRST_PROMPT}\"${RESET}"
+  echo ""
+  echo -ne "${YELLOW}Launch Claude Code now? (Y/n): ${RESET}"
+  read LAUNCH_YN
+  LAUNCH_YN=$(echo "$LAUNCH_YN" | tr '[:upper:]' '[:lower:]')
+
+  if [ "$LAUNCH_YN" = "n" ] || [ "$LAUNCH_YN" = "no" ]; then
+    echo ""
+    echo -e "${DIM}No rush. When you're ready, just run:${RESET}"
+    echo ""
+    echo -e "  ${BOLD}claude${RESET}"
+    echo ""
+    # Copy to clipboard anyway
+    if command -v pbcopy &>/dev/null; then
+      echo -n "$FIRST_PROMPT" | pbcopy
+      echo -e "${DIM}(Your first command is on your clipboard — just paste it.)${RESET}"
+    fi
+    echo ""
+    echo -e "${GREEN}${BOLD}Welcome, ${USER_NAME}. Go build something dangerous.${RESET}"
+    echo ""
+  else
+    echo ""
+    # Copy first command to clipboard so they can paste it
+    if command -v pbcopy &>/dev/null; then
+      echo -n "$FIRST_PROMPT" | pbcopy
+      echo -e "${GREEN}${BOLD}Copied to clipboard. Just paste when Claude opens.${RESET}"
+    else
+      echo -e "${DIM}Say this: \"${FIRST_PROMPT}\"${RESET}"
+    fi
+    echo ""
+    sleep 1
+    echo -e "${GREEN}${BOLD}Launching Claude Code...${RESET}"
+    echo ""
+    sleep 0.5
+    # Launch Claude Code — this replaces the current process
+    exec claude
+  fi
+else
+  # Claude Code not installed yet
+  echo -e "${BOLD}Now install Claude Code and say this:${RESET}"
+  echo ""
+  echo -e "  ${MAGENTA}${BOLD}\"${FIRST_PROMPT}\"${RESET}"
+  echo ""
+  echo -e "${DIM}Install:${RESET}"
+  echo ""
+  echo -e "  ${BOLD}npm install -g @anthropic-ai/claude-code${RESET}"
+  echo ""
+  echo -e "${DIM}Then just type ${BOLD}claude${RESET}${DIM} and paste that command.${RESET}"
+  echo ""
+  echo -e "${GREEN}${BOLD}Welcome, ${USER_NAME}. Go build something dangerous.${RESET}"
+  echo ""
+fi
