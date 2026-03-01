@@ -536,113 +536,90 @@ echo ""
 sleep 0.8
 
 # ═══════════════════════════════════════════
-# THE QUICK WIN (Walt Disney: never break the spell)
-# Don't SAY what Claude can do. SHOW them. Right here. Right now.
-# The ride doesn't stop — it accelerates.
+# BEFORE / AFTER (Walt Disney: show the transformation)
+# No API call. No generic response. Just their own words,
+# reflected back as a life they're about to leave behind.
+# ═══════════════════════════════════════════
+
+echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo ""
+echo -e "${BOLD}Here's what your life looks like right now:${RESET}"
+echo ""
+sleep 0.3
+echo -e "  ${RED}${BOLD}BEFORE${RESET}"
+echo -e "  ${DIM}You wake up. \"${USER_HATES}\" is waiting for you. Again.${RESET}"
+echo -e "  ${DIM}You do it yourself. It takes forever. It drains you.${RESET}"
+echo -e "  ${DIM}Nobody's fixing this. It's just... your life now.${RESET}"
+echo ""
+sleep 1
+echo -e "  ${GREEN}${BOLD}AFTER${RESET}"
+echo -e "  ${BOLD}You open your terminal. You say:${RESET}"
+echo -e "  ${MAGENTA}\"Handle ${USER_HATES} for me.\"${RESET}"
+echo -e "  ${BOLD}Claude does it. You move on with your day.${RESET}"
+echo ""
+sleep 1
+
+# ═══════════════════════════════════════════
+# TRANSPARENCY: How Claude knows you
+# ═══════════════════════════════════════════
+
+echo -e "${DIM}Everything you just told me — your name, what you hate,"
+echo -e "your apps, how you like to communicate — it's saved in${RESET}"
+echo -e "${BOLD}~/.claude/CLAUDE.md${RESET}"
+echo -e "${DIM}Claude reads this every single session. It knows you.${RESET}"
+echo -e "${DIM}Edit it anytime to teach it more.${RESET}"
+echo ""
+sleep 0.5
+
+# ═══════════════════════════════════════════
+# THE LAUNCH (ride never stops)
 # ═══════════════════════════════════════════
 
 echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
 
+FIRST_PROMPT="I just set up Claude Code. Read my ~/.claude/CLAUDE.md — it has my name, what I hate doing, my apps, and my communication style. Then: 1) Show me what you know about me in a quick table. 2) Pick the ONE thing from my pain points you can fix RIGHT NOW — not tomorrow, not 'let me plan' — actually build it or do it. 3) If I have app connections ready, connect the most useful one. Go."
+
 if command -v claude &>/dev/null; then
-  echo -e "${BOLD}Now watch this.${RESET}"
+  echo -e "${GREEN}${BOLD}Ready to see the AFTER?${RESET}"
   echo ""
-  sleep 0.8
-
-  # Build the quick win prompt — specific, visual, uses their actual data
-  # This runs non-interactive (claude -p) and shows the result RIGHT HERE
-  QUICK_WIN_PROMPT="I just set up Claude Code. My name is ${USER_NAME}. Read my ~/.claude/CLAUDE.md — you'll see my profile. Then do exactly this:
-
-1. Show me a short table: what you found about me (name, pain points, tools detected, communication style)
-2. Based on what I hate doing (\"${USER_HATES}\"), give me the ONE specific thing you're going to automate for me FIRST. Be specific — not 'I can help with email' but 'Here's the exact workflow I'll build for you.'
-3. Pick my most useful detected app and show me ONE real command I can run right now.
-
-Keep it short. Make it personal. Show me you actually know me."
-
-  echo -ne "  ${DIM}Waking up Claude"
-  for i in 1 2 3; do sleep 0.4; echo -ne "."; done
-  echo -e "${RESET}"
+  echo -e "Claude Code is about to open. Your first command is loaded."
+  echo -e "${DIM}It will read your profile, see your pain, and start fixing it.${RESET}"
   echo ""
+  echo -ne "${YELLOW}Let's go? (Y/n): ${RESET}"
+  read LAUNCH_YN
+  LAUNCH_YN=$(echo "$LAUNCH_YN" | tr '[:upper:]' '[:lower:]')
 
-  # Run the quick win — Claude reads their profile and responds
-  claude -p "$QUICK_WIN_PROMPT" 2>/dev/null
-
-  QUICK_WIN_EXIT=$?
-
-  if [ $QUICK_WIN_EXIT -eq 0 ]; then
-    # Quick win worked — Claude just showed them magic
+  if [ "$LAUNCH_YN" = "n" ] || [ "$LAUNCH_YN" = "no" ]; then
     echo ""
-    echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-    echo ""
-    echo -e "${GREEN}${BOLD}That just happened. In your terminal.${RESET}"
-    echo ""
-    echo -e "Claude read your profile, understood your pain, and gave you a plan."
-    echo -e "${DIM}No copy-paste. No setup. It just works.${RESET}"
-    echo ""
-    sleep 1
-
-    echo -e "${BOLD}Ready to go deeper? This opens a full conversation.${RESET}"
-    echo -e "${DIM}Talk like a friend. Say what you need. Claude handles the rest.${RESET}"
-    echo ""
-    echo -ne "${YELLOW}Open Claude Code now? (Y/n): ${RESET}"
-    read LAUNCH_YN
-    LAUNCH_YN=$(echo "$LAUNCH_YN" | tr '[:upper:]' '[:lower:]')
-
-    if [ "$LAUNCH_YN" = "n" ] || [ "$LAUNCH_YN" = "no" ]; then
-      echo ""
-      echo -e "${DIM}Whenever you're ready:${RESET}"
-      echo ""
-      echo -e "  ${BOLD}claude${RESET}"
-      echo ""
-      echo -e "${GREEN}${BOLD}Welcome, ${USER_NAME}. Go build something dangerous.${RESET}"
-      echo ""
-    else
-      echo ""
-      echo -e "${GREEN}${BOLD}Let's go.${RESET}"
-      echo ""
-      sleep 0.5
-      exec claude
-    fi
-  else
-    # claude -p failed (no API key, rate limit, etc.) — fall back to launch
-    echo ""
-    echo -e "${DIM}(Couldn't run the preview — that's OK, you'll see it live.)${RESET}"
-    echo ""
-
-    FIRST_PROMPT="My name is ${USER_NAME}. I just set up Claude Code. I hate ${USER_HATES}. Read my ~/.claude/CLAUDE.md to see my full profile, then build me a system to fix my biggest pain point."
-
     if command -v pbcopy &>/dev/null; then
       echo -n "$FIRST_PROMPT" | pbcopy
+      echo -e "${DIM}Your first command is on your clipboard.${RESET}"
     fi
-
-    echo -e "${BOLD}Let's launch Claude Code.${RESET}"
-    echo -e "${DIM}Your first command is on your clipboard — just paste it.${RESET}"
+    echo -e "${DIM}Whenever you're ready:${RESET}  ${BOLD}claude${RESET}"
     echo ""
-    echo -ne "${YELLOW}Launch now? (Y/n): ${RESET}"
-    read LAUNCH_YN
-    LAUNCH_YN=$(echo "$LAUNCH_YN" | tr '[:upper:]' '[:lower:]')
-
-    if [ "$LAUNCH_YN" = "n" ] || [ "$LAUNCH_YN" = "no" ]; then
-      echo ""
-      echo -e "  ${BOLD}claude${RESET}"
-      echo ""
-      echo -e "${GREEN}${BOLD}Welcome, ${USER_NAME}. Go build something dangerous.${RESET}"
-      echo ""
-    else
-      echo ""
-      sleep 0.5
-      exec claude
+    echo -e "${GREEN}${BOLD}Welcome, ${USER_NAME}. Go build something dangerous.${RESET}"
+    echo ""
+  else
+    echo ""
+    if command -v pbcopy &>/dev/null; then
+      echo -n "$FIRST_PROMPT" | pbcopy
+      echo -e "${GREEN}Copied to clipboard. Just paste when Claude opens.${RESET}"
     fi
+    sleep 0.5
+    echo -e "${GREEN}${BOLD}Opening Claude Code...${RESET}"
+    echo ""
+    sleep 0.5
+    exec claude
   fi
 else
-  # Claude Code not installed
-  echo -e "${BOLD}Almost there. Install Claude Code:${RESET}"
+  echo -e "${BOLD}Install Claude Code:${RESET}"
   echo ""
   echo -e "  ${BOLD}npm install -g @anthropic-ai/claude-code${RESET}"
   echo ""
-  echo -e "Then type ${BOLD}claude${RESET} and say:"
+  echo -e "Then type ${BOLD}claude${RESET} and paste this:"
   echo ""
-  echo -e "  ${MAGENTA}\"I hate ${USER_HATES}. Fix this for me.\"${RESET}"
+  echo -e "  ${MAGENTA}\"${FIRST_PROMPT}\"${RESET}"
   echo ""
   echo -e "${GREEN}${BOLD}Welcome, ${USER_NAME}. Go build something dangerous.${RESET}"
   echo ""
