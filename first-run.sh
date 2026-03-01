@@ -178,8 +178,14 @@ echo -e "  ${BOLD}5${RESET}) Slack"
 echo -e "  ${BOLD}6${RESET}) GitHub"
 echo -e "  ${BOLD}7${RESET}) None of these / I'll figure it out later"
 echo ""
-echo -ne "${YELLOW}Your tools (e.g. 1 2 3): ${RESET}"
+echo -ne "${YELLOW}Your tools (e.g. 1 2 3 or 'all'): ${RESET}"
 read TOOLS_INPUT
+
+# Handle "all" / "ALL" / "everything" — natural language input
+TOOLS_LOWER=$(echo "$TOOLS_INPUT" | tr '[:upper:]' '[:lower:]')
+if [[ "$TOOLS_LOWER" == *"all"* ]] || [[ "$TOOLS_LOWER" == *"every"* ]]; then
+  TOOLS_INPUT="1 2 3 4 5 6"
+fi
 
 # Parse tool selections
 USE_GMAIL=false
