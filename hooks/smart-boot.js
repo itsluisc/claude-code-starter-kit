@@ -15,7 +15,8 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const STATE_FILE = '/tmp/claude-session-state.md';
+// v2: Persistent state directory (survives reboots, unlike /tmp/)
+const STATE_FILE = path.join(os.homedir(), '.claude', 'state', 'session-state.md');
 
 // ═══════════════════════════════════════════
 // PROJECT DETECTION — Auto + Manual

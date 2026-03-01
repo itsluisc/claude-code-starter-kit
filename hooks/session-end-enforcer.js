@@ -67,8 +67,8 @@ process.stdin.on('end', () => {
       track.supermemoryTime = Date.now();
     }
 
-    // Track session state write
-    if (toolName === 'Write' && toolInput.includes('session-state')) {
+    // Track session state write (both old /tmp/ path and new ~/.claude/state/ path)
+    if (toolName === 'Write' && (toolInput.includes('session-state') || toolInput.includes('.claude/state'))) {
       track.stateFile = true;
     }
 
@@ -213,10 +213,13 @@ function verifyFilesOnDisk(track) {
   };
 
   // Check session state file exists AND is recent (< 2 hours)
+  // Check both new persistent path and legacy /tmp/ path
   try {
-    const statePath = '/tmp/claude-session-state.md';
-    if (fs.existsSync(statePath)) {
-      const stat = fs.statSync(statePath);
+    const statePath = path.join(os.homedir(), '.claude', 'state', 'session-state.md');
+    const legacyPath = '/tmp/claude-session-state.md';
+    const checkPath = fs.existsSync(statePath) ? statePath : legacyPath;
+    if (fs.existsSync(checkPath)) {
+      const stat = fs.statSync(checkPath);
       const ageMin = (Date.now() - stat.mtimeMs) / (1000 * 60);
       result.stateFile = ageMin < 120; // must be < 2 hours old
     }

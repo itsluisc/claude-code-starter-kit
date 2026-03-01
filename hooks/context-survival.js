@@ -26,7 +26,10 @@ const COMPACTION_JUMP = 15;       // remaining jumps 15%+ between checks = compa
 const STALE_SECONDS = 120;        // ignore metrics older than 2 min
 const DEBOUNCE_CALLS = 6;         // min tool calls between warnings at same level
 
-const STATE_FILE = '/tmp/claude-session-state.md';
+// v2: Persistent state directory (survives reboots, unlike /tmp/)
+const STATE_DIR = path.join(os.homedir(), '.claude', 'state');
+const STATE_FILE = path.join(STATE_DIR, 'session-state.md');
+const INCREMENTAL_INTERVAL = 10; // save every N tool calls (Code Council fix)
 
 let input = '';
 process.stdin.setEncoding('utf8');
@@ -36,6 +39,11 @@ process.stdin.on('end', () => {
     const data = JSON.parse(input);
     const sessionId = data.session_id;
     if (!sessionId) { process.exit(0); return; }
+
+    // Ensure state directory exists
+    if (!fs.existsSync(STATE_DIR)) {
+      fs.mkdirSync(STATE_DIR, { recursive: true });
+    }
 
     // Read metrics from statusline bridge file
     const metricsPath = path.join(os.tmpdir(), `claude-ctx-${sessionId}.json`);
@@ -61,10 +69,36 @@ process.stdin.on('end', () => {
       lastRemaining: null,
       callsSinceWarn: 0,
       lastLevel: null,
-      hasSynthesized: false
+      hasSynthesized: false,
+      totalCalls: 0,
+      lastIncrementalAt: 0
     };
     if (fs.existsSync(trackPath)) {
       try { track = JSON.parse(fs.readFileSync(trackPath, 'utf8')); } catch (e) {}
+    }
+
+    track.totalCalls = (track.totalCalls || 0) + 1;
+
+    // ═══════════════════════════════════════════
+    // INCREMENTAL SAVE (Code Council: save continuously)
+    // Every 10 tool calls, remind Claude to update state file.
+    // This ensures last save is always < 5 minutes old.
+    // Only fires if NO threshold warning is about to fire.
+    // ═══════════════════════════════════════════
+    const callsSinceIncremental = track.totalCalls - (track.lastIncrementalAt || 0);
+    const shouldIncremental = callsSinceIncremental >= INCREMENTAL_INTERVAL &&
+                              remaining > SYNTHESIZE_THRESHOLD;
+
+    if (shouldIncremental) {
+      track.lastIncrementalAt = track.totalCalls;
+      fs.writeFileSync(trackPath, JSON.stringify(track));
+      // Silent instruction — no emoji alarm, just a nudge
+      emit(
+        `🔄 INCREMENTAL SAVE (${track.totalCalls} tool calls). ` +
+        `Update ${STATE_FILE} with current progress if anything meaningful changed. ` +
+        `Quick update only — don't stop working.`
+      );
+      return;
     }
 
     // ═══════════════════════════════════════════

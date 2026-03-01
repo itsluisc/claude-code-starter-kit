@@ -85,6 +85,7 @@ echo "📁 Creating directories..."
 mkdir -p "$HOOKS_DIR"
 mkdir -p "$REFS_DIR"
 mkdir -p "$CLAUDE_DIR/skills/_shared"
+mkdir -p "$CLAUDE_DIR/state"
 
 # ═══════════════════════════════════════════
 # 2. COPY HOOKS

@@ -19,12 +19,12 @@ Sessions synthesize and continue. No new chats. No copy/paste. Fully automatic.
 
 | Context Used | What Happens |
 |---|---|
-| 60% | Claude writes state to `/tmp/claude-session-state.md`. Keeps working. |
+| 60% | Claude writes state to `~/.claude/state/session-state.md`. Keeps working. |
 | 70% | Updates state file. Keeps working. |
 | 80% | Final update. Auto-compaction imminent. Keeps working. |
 | Post-compaction | Reads state file. Resumes seamlessly. |
 
-**Session start:** Check `/tmp/claude-session-state.md` — if < 2 hours old, read it and continue.
+**Session start:** Check `~/.claude/state/session-state.md` — if < 2 hours old, read it and continue.
 
 **HARD RULES:** NEVER suggest "new session." NEVER burn context on backup rituals. Write/read state file when hooks instruct. State file < 2KB.
 
