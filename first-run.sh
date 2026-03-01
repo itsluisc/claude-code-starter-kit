@@ -184,15 +184,8 @@ echo -e "Claude doesn't just answer questions."
 echo -e "It connects ${BOLD}directly${RESET} to your apps. Live. Not copy-paste."
 echo ""
 sleep 0.5
-echo -e "${BOLD}Give me one second...${RESET}"
-echo ""
-sleep 0.3
-echo -ne "  ${DIM}Scanning your ${PLATFORM}"
-sleep 0.3; echo -ne "."; sleep 0.3; echo -ne "."; sleep 0.3; echo -e ".${RESET}"
-echo ""
-sleep 0.5
+# ── SILENT DETECTION (Steve Jobs: scan first, reveal after) ──
 
-# Initialize all tool flags
 USE_GMAIL=false; USE_SLACK=false; USE_DISCORD=false
 USE_NOTION=false; USE_ASANA=false; USE_LINEAR=false
 USE_TODOIST=false; USE_TRELLO=false; USE_JIRA=false
@@ -201,105 +194,156 @@ USE_GITHUB=false; USE_GITLAB=false; USE_FIGMA=false
 USE_STRIPE=false; USE_QUICKBOOKS=false; USE_HUBSPOT=false
 USE_YOUTUBE=false; USE_TWITTER=false
 USE_ZAPIER=false; USE_MAKE=false; USE_AIRTABLE=false
+DETECTED_APPS=()
 MCP_LIST=""
 MCP_COUNT=0
-DETECTED_NAMES=""
 
 add_detected() {
   local display="$1" desc="$2"
-  DETECTED_NAMES="${DETECTED_NAMES}${display}\n"
+  DETECTED_APPS+=("${display}")
   MCP_LIST="${MCP_LIST}\n  - ${display} (${desc})"
   ((MCP_COUNT++))
 }
 
-# ── macOS: Scan /Applications/ ──
+# macOS: Scan /Applications/
 if [ "$PLATFORM" = "macOS" ]; then
-  [ -d "/Applications/Notion.app" ]   && USE_NOTION=true   && add_detected "Notion" "pages, databases, wikis"
-  [ -d "/Applications/Slack.app" ]    && USE_SLACK=true    && add_detected "Slack" "channels, messages, threads"
-  [ -d "/Applications/Discord.app" ]  && USE_DISCORD=true  && add_detected "Discord" "servers, channels, messages"
-  [ -d "/Applications/Figma.app" ]    && USE_FIGMA=true    && add_detected "Figma" "designs, components, files"
-  [ -d "/Applications/Todoist.app" ]  && USE_TODOIST=true  && add_detected "Todoist" "tasks, projects"
-  [ -d "/Applications/Trello.app" ]   && USE_TRELLO=true   && add_detected "Trello" "boards, cards, lists"
-  [ -d "/Applications/Asana.app" ]    && USE_ASANA=true    && add_detected "Asana" "tasks, projects, goals"
-  [ -d "/Applications/Linear.app" ]   && USE_LINEAR=true   && add_detected "Linear" "issues, projects, cycles"
-  [ -d "/Applications/Dropbox.app" ]  && USE_DROPBOX=true  && add_detected "Dropbox" "files, folders"
+  [ -d "/Applications/Notion.app" ]        && USE_NOTION=true   && add_detected "Notion" "pages, databases, wikis"
+  [ -d "/Applications/Slack.app" ]         && USE_SLACK=true    && add_detected "Slack" "channels, messages, threads"
+  [ -d "/Applications/Discord.app" ]       && USE_DISCORD=true  && add_detected "Discord" "servers, channels, messages"
+  [ -d "/Applications/Figma.app" ]         && USE_FIGMA=true    && add_detected "Figma" "designs, components, files"
+  [ -d "/Applications/Todoist.app" ]       && USE_TODOIST=true  && add_detected "Todoist" "tasks, projects"
+  [ -d "/Applications/Trello.app" ]        && USE_TRELLO=true   && add_detected "Trello" "boards, cards, lists"
+  [ -d "/Applications/Asana.app" ]         && USE_ASANA=true    && add_detected "Asana" "tasks, projects, goals"
+  [ -d "/Applications/Linear.app" ]        && USE_LINEAR=true   && add_detected "Linear" "issues, projects, cycles"
+  [ -d "/Applications/Dropbox.app" ]       && USE_DROPBOX=true  && add_detected "Dropbox" "files, folders"
+  [ -d "/Applications/Obsidian.app" ]      && add_detected "Obsidian" "notes, knowledge base"
+  [ -d "/Applications/1Password.app" ] || [ -d "/Applications/1Password 7.app" ] && add_detected "1Password" "passwords, secrets"
+  [ -d "/Applications/Spotify.app" ]       && add_detected "Spotify" "music, playlists"
+  [ -d "/Applications/zoom.us.app" ]       && add_detected "Zoom" "meetings, recordings"
+  [ -d "/Applications/Telegram.app" ]      && add_detected "Telegram" "messages, bots"
+  [ -d "/Applications/WhatsApp.app" ]      && add_detected "WhatsApp" "messages"
+  ls -d /Applications/Adobe\ Premiere\ Pro* &>/dev/null && add_detected "Premiere Pro" "video editing"
+  [ -d "/Applications/Final Cut Pro.app" ] && add_detected "Final Cut Pro" "video editing"
+  ls -d /Applications/DaVinci\ Resolve* &>/dev/null && add_detected "DaVinci Resolve" "video editing, color"
+  { [ -d "/Applications/CapCut.app" ] || [ -d "/Applications/CapCut 2.app" ]; } && add_detected "CapCut" "video editing, effects"
+  [ -d "/Applications/Cursor.app" ]        && add_detected "Cursor" "AI code editor"
+  [ -d "/Applications/Visual Studio Code.app" ] && add_detected "VS Code" "code editor"
+  [ -d "/Applications/Warp.app" ]          && add_detected "Warp" "AI terminal"
+  [ -d "/Applications/Arc.app" ]           && add_detected "Arc" "browser"
+  [ -d "/Applications/Canva.app" ]         && add_detected "Canva" "design, graphics"
+  [ -d "/Applications/Loom.app" ]          && add_detected "Loom" "screen recording"
+  [ -d "/Applications/ChatGPT.app" ]       && add_detected "ChatGPT" "AI assistant"
+  [ -d "/Applications/Claude.app" ]        && add_detected "Claude" "AI assistant"
+  [ -d "/Applications/Perplexity.app" ]    && add_detected "Perplexity" "AI search"
+  [ -d "/Applications/Docker.app" ]        && add_detected "Docker" "containers"
+  [ -d "/Applications/Brave Browser.app" ] && add_detected "Brave" "private browser"
+  [ -d "/Applications/Raycast.app" ]       && add_detected "Raycast" "launcher, workflows"
+  [ -d "/Applications/ScreenFlow.app" ]    && add_detected "ScreenFlow" "screen recording"
+  [ -d "/Applications/VLC.app" ]           && add_detected "VLC" "media player"
 
-  # Google Chrome = likely Google Workspace user
+  # Google Chrome = Google Workspace user
   if [ -d "/Applications/Google Chrome.app" ]; then
-    USE_GMAIL=true;  add_detected "Gmail" "read, search, draft emails"
-    USE_GCAL=true;   add_detected "Google Calendar" "events, scheduling"
-    USE_GDRIVE=true; add_detected "Google Drive" "files, folders, sharing"
+    USE_GMAIL=true;  add_detected "Gmail" "email"
+    USE_GCAL=true;   add_detected "Google Calendar" "scheduling"
+    USE_GDRIVE=true; add_detected "Google Drive" "files"
   fi
 fi
 
-# ── CLI tools (cross-platform) ──
+# CLI tools
 if command -v gh &>/dev/null; then
-  USE_GITHUB=true && add_detected "GitHub" "repos, PRs, issues, code"
+  USE_GITHUB=true; add_detected "GitHub" "repos, PRs, issues"
 elif command -v git &>/dev/null; then
-  git remote -v 2>/dev/null | grep -qi "github" && USE_GITHUB=true && add_detected "GitHub" "repos, PRs, issues, code"
+  git remote -v 2>/dev/null | grep -qi "github" && USE_GITHUB=true && add_detected "GitHub" "repos, PRs, issues"
 fi
-command -v stripe &>/dev/null && USE_STRIPE=true && add_detected "Stripe" "payments, subscriptions, invoices"
+command -v stripe &>/dev/null && USE_STRIPE=true && add_detected "Stripe" "payments, invoices"
+command -v brew &>/dev/null && add_detected "Homebrew" "package manager"
+command -v python3 &>/dev/null && add_detected "Python" "scripting"
+command -v node &>/dev/null && add_detected "Node.js" "JavaScript runtime"
+command -v ffmpeg &>/dev/null && add_detected "FFmpeg" "audio/video processing"
 
-# ── Existing MCP servers already configured ──
+# Existing MCP configs
 if [ -f "$HOME/.claude/settings.json" ]; then
-  grep -qi '"gmail"' "$HOME/.claude/settings.json" 2>/dev/null && [ "$USE_GMAIL" = false ] && USE_GMAIL=true && add_detected "Gmail" "read, search, draft emails"
-  grep -qi '"notion"' "$HOME/.claude/settings.json" 2>/dev/null && [ "$USE_NOTION" = false ] && USE_NOTION=true && add_detected "Notion" "pages, databases, wikis"
-  grep -qi '"slack"' "$HOME/.claude/settings.json" 2>/dev/null && [ "$USE_SLACK" = false ] && USE_SLACK=true && add_detected "Slack" "channels, messages, threads"
+  grep -qi '"gmail"' "$HOME/.claude/settings.json" 2>/dev/null && [ "$USE_GMAIL" = false ] && USE_GMAIL=true && add_detected "Gmail" "email"
+  grep -qi '"notion"' "$HOME/.claude/settings.json" 2>/dev/null && [ "$USE_NOTION" = false ] && USE_NOTION=true && add_detected "Notion" "pages, databases"
+  grep -qi '"slack"' "$HOME/.claude/settings.json" 2>/dev/null && [ "$USE_SLACK" = false ] && USE_SLACK=true && add_detected "Slack" "messages, channels"
 fi
 
 # ═══════════════════════════════════════════
-# THE REVEAL
+# THE REVEAL (Steve Jobs: anticipation → reveal → delight)
+# Detection happened silently above. Now we perform.
 # ═══════════════════════════════════════════
+
+echo -ne "  ${DIM}Scanning your ${PLATFORM}"
+for i in 1 2 3; do sleep 0.4; echo -ne "."; done
+echo -e "${RESET}"
+sleep 0.3
 
 if [ $MCP_COUNT -gt 0 ]; then
-  echo -e "  ${ORANGE}${BOLD}Found ${MCP_COUNT} apps on your machine:${RESET}"
   echo ""
-  echo -e "$DETECTED_NAMES" | while IFS= read -r app; do
-    [ -n "$app" ] && echo -e "    ${GREEN}✓${RESET} ${app}" && sleep 0.1
+  echo -e "  ${ORANGE}${BOLD}I found ${MCP_COUNT} things on your machine:${RESET}"
+  echo ""
+  for app in "${DETECTED_APPS[@]}"; do
+    echo -e "    ${GREEN}✓${RESET} ${app}"
+    sleep 0.08
   done
   echo ""
   sleep 0.5
-  echo -e "  ${BOLD}Claude can talk to every single one of these.${RESET}"
-  echo -e "  ${DIM}Read your email. Check your calendar. Update your Notion.${RESET}"
-  echo -e "  ${DIM}All from the terminal. All in real time.${RESET}"
+
+  # Build dynamic description from ACTUAL detected apps (never mention what's not there)
+  REVEAL_EXAMPLES=""
+  $USE_GMAIL && REVEAL_EXAMPLES="${REVEAL_EXAMPLES}Read your email. "
+  $USE_GCAL && REVEAL_EXAMPLES="${REVEAL_EXAMPLES}Check your calendar. "
+  $USE_NOTION && REVEAL_EXAMPLES="${REVEAL_EXAMPLES}Update your Notion. "
+  $USE_GITHUB && REVEAL_EXAMPLES="${REVEAL_EXAMPLES}Manage your repos. "
+  $USE_SLACK && REVEAL_EXAMPLES="${REVEAL_EXAMPLES}Search your Slack. "
+  [ -z "$REVEAL_EXAMPLES" ] && REVEAL_EXAMPLES="Control your tools. "
+
+  echo -e "  ${BOLD}Claude can talk to these. Live.${RESET}"
+  echo -e "  ${DIM}${REVEAL_EXAMPLES}All from the terminal.${RESET}"
   echo ""
   sleep 0.5
   echo -ne "  ${YELLOW}Connect everything? (Y/n): ${RESET}"
   read CONNECT_YN
   CONNECT_YN=$(echo "$CONNECT_YN" | tr '[:upper:]' '[:lower:]')
   if [ "$CONNECT_YN" = "n" ] || [ "$CONNECT_YN" = "no" ]; then
-    echo -e "  ${DIM}No problem — connect anytime by telling Claude.${RESET}"
+    echo -e "  ${DIM}No problem — tell Claude anytime.${RESET}"
     MCP_COUNT=0
   else
-    echo -e "  ${GREEN}${BOLD}All ${MCP_COUNT} apps. Let's go.${RESET}"
+    echo -e "  ${GREEN}${BOLD}Done.${RESET}"
   fi
 else
-  echo -e "  ${DIM}No apps detected automatically — no worries.${RESET}"
-  echo -e "  ${DIM}Tell Claude \"connect my Gmail\" anytime and it walks you through it.${RESET}"
+  echo ""
+  echo -e "  ${DIM}No apps detected — that's OK.${RESET}"
+  echo -e "  ${DIM}Tell Claude \"connect my Gmail\" anytime.${RESET}"
 fi
 
 echo ""
-echo -e "${DIM}Anything else you use that I missed? (type names or Enter to skip)${RESET}"
+echo -e "${DIM}Anything I missed? (type app names, or Enter to skip)${RESET}"
 echo -ne "${YELLOW}Other apps: ${RESET}"
 read EXTRA_APPS
 if [ -n "$EXTRA_APPS" ]; then
   EX=$(echo "$EXTRA_APPS" | tr '[:upper:]' '[:lower:]')
-  [[ "$EX" == *"gmail"* ]]     && [ "$USE_GMAIL" = false ]    && USE_GMAIL=true    && add_detected "Gmail" "read, search, draft emails"
-  [[ "$EX" == *"notion"* ]]    && [ "$USE_NOTION" = false ]   && USE_NOTION=true   && add_detected "Notion" "pages, databases, wikis"
-  [[ "$EX" == *"slack"* ]]     && [ "$USE_SLACK" = false ]    && USE_SLACK=true    && add_detected "Slack" "channels, messages, threads"
-  [[ "$EX" == *"github"* ]]    && [ "$USE_GITHUB" = false ]   && USE_GITHUB=true   && add_detected "GitHub" "repos, PRs, issues, code"
-  [[ "$EX" == *"calendar"* ]]  && [ "$USE_GCAL" = false ]     && USE_GCAL=true     && add_detected "Google Calendar" "events, scheduling"
-  [[ "$EX" == *"drive"* ]]     && [ "$USE_GDRIVE" = false ]   && USE_GDRIVE=true   && add_detected "Google Drive" "files, folders, sharing"
-  [[ "$EX" == *"discord"* ]]   && [ "$USE_DISCORD" = false ]  && USE_DISCORD=true  && add_detected "Discord" "servers, channels, messages"
-  [[ "$EX" == *"figma"* ]]     && [ "$USE_FIGMA" = false ]    && USE_FIGMA=true    && add_detected "Figma" "designs, components, files"
-  [[ "$EX" == *"asana"* ]]     && [ "$USE_ASANA" = false ]    && USE_ASANA=true    && add_detected "Asana" "tasks, projects, goals"
-  [[ "$EX" == *"stripe"* ]]    && [ "$USE_STRIPE" = false ]   && USE_STRIPE=true   && add_detected "Stripe" "payments, subscriptions, invoices"
-  [[ "$EX" == *"youtube"* ]]   && [ "$USE_YOUTUBE" = false ]  && USE_YOUTUBE=true  && add_detected "YouTube" "transcripts, analytics"
-  [[ "$EX" == *"trello"* ]]    && [ "$USE_TRELLO" = false ]   && USE_TRELLO=true   && add_detected "Trello" "boards, cards, lists"
-  [[ "$EX" == *"hubspot"* ]]   && [ "$USE_HUBSPOT" = false ]  && USE_HUBSPOT=true  && add_detected "HubSpot" "CRM, contacts, deals"
-  [[ "$EX" == *"airtable"* ]]  && [ "$USE_AIRTABLE" = false ] && USE_AIRTABLE=true && add_detected "Airtable" "databases, views, automations"
-  [[ "$EX" == *"zapier"* ]]    && [ "$USE_ZAPIER" = false ]   && USE_ZAPIER=true   && add_detected "Zapier" "5000+ app automations"
-  echo -e "  ${GREEN}Added.${RESET}"
+  EXTRA_ADDED=0
+  [[ "$EX" == *"gmail"* ]]     && [ "$USE_GMAIL" = false ]    && USE_GMAIL=true    && add_detected "Gmail" "email" && ((EXTRA_ADDED++))
+  [[ "$EX" == *"notion"* ]]    && [ "$USE_NOTION" = false ]   && USE_NOTION=true   && add_detected "Notion" "pages, databases" && ((EXTRA_ADDED++))
+  [[ "$EX" == *"slack"* ]]     && [ "$USE_SLACK" = false ]    && USE_SLACK=true    && add_detected "Slack" "messages, channels" && ((EXTRA_ADDED++))
+  [[ "$EX" == *"github"* ]]    && [ "$USE_GITHUB" = false ]   && USE_GITHUB=true   && add_detected "GitHub" "repos, PRs" && ((EXTRA_ADDED++))
+  [[ "$EX" == *"calendar"* ]]  && [ "$USE_GCAL" = false ]     && USE_GCAL=true     && add_detected "Google Calendar" "scheduling" && ((EXTRA_ADDED++))
+  [[ "$EX" == *"drive"* ]]     && [ "$USE_GDRIVE" = false ]   && USE_GDRIVE=true   && add_detected "Google Drive" "files" && ((EXTRA_ADDED++))
+  [[ "$EX" == *"discord"* ]]   && [ "$USE_DISCORD" = false ]  && USE_DISCORD=true  && add_detected "Discord" "messages" && ((EXTRA_ADDED++))
+  [[ "$EX" == *"figma"* ]]     && [ "$USE_FIGMA" = false ]    && USE_FIGMA=true    && add_detected "Figma" "designs" && ((EXTRA_ADDED++))
+  [[ "$EX" == *"asana"* ]]     && [ "$USE_ASANA" = false ]    && USE_ASANA=true    && add_detected "Asana" "tasks, projects" && ((EXTRA_ADDED++))
+  [[ "$EX" == *"stripe"* ]]    && [ "$USE_STRIPE" = false ]   && USE_STRIPE=true   && add_detected "Stripe" "payments" && ((EXTRA_ADDED++))
+  [[ "$EX" == *"youtube"* ]]   && [ "$USE_YOUTUBE" = false ]  && USE_YOUTUBE=true  && add_detected "YouTube" "transcripts" && ((EXTRA_ADDED++))
+  [[ "$EX" == *"trello"* ]]    && [ "$USE_TRELLO" = false ]   && USE_TRELLO=true   && add_detected "Trello" "boards, cards" && ((EXTRA_ADDED++))
+  [[ "$EX" == *"hubspot"* ]]   && [ "$USE_HUBSPOT" = false ]  && USE_HUBSPOT=true  && add_detected "HubSpot" "CRM" && ((EXTRA_ADDED++))
+  [[ "$EX" == *"airtable"* ]]  && [ "$USE_AIRTABLE" = false ] && USE_AIRTABLE=true && add_detected "Airtable" "databases" && ((EXTRA_ADDED++))
+  [[ "$EX" == *"zapier"* ]]    && [ "$USE_ZAPIER" = false ]   && USE_ZAPIER=true   && add_detected "Zapier" "automations" && ((EXTRA_ADDED++))
+  if [ $EXTRA_ADDED -gt 0 ]; then
+    echo -e "  ${GREEN}+${EXTRA_ADDED} added.${RESET}"
+  else
+    echo -e "  ${DIM}No worries — you can connect anything later.${RESET}"
+  fi
 fi
 sleep 0.5
 echo ""
@@ -435,11 +479,22 @@ sleep 0.3
 
 if [ $MCP_COUNT -gt 0 ]; then
   echo ""
-  echo -e "${BOLD}To connect your apps, just tell Claude:${RESET}"
+  # Build dynamic examples from ACTUAL detected apps
+  MCP_EX1=""; MCP_EX2=""
+  $USE_GMAIL && MCP_EX1="Connect my Gmail"
+  $USE_NOTION && { [ -z "$MCP_EX1" ] && MCP_EX1="Set up Notion" || MCP_EX2="Set up Notion"; }
+  $USE_SLACK && { [ -z "$MCP_EX1" ] && MCP_EX1="Connect Slack" || [ -z "$MCP_EX2" ] && MCP_EX2="Connect Slack"; }
+  $USE_GITHUB && { [ -z "$MCP_EX1" ] && MCP_EX1="Connect GitHub" || [ -z "$MCP_EX2" ] && MCP_EX2="Connect GitHub"; }
+  [ -z "$MCP_EX1" ] && MCP_EX1="Connect my apps"
+  echo -e "${BOLD}To connect them, just tell Claude:${RESET}"
   echo ""
-  echo -e "  ${MAGENTA}\"Connect my Gmail\"${RESET}  ${DIM}or${RESET}  ${MAGENTA}\"Set up Notion\"${RESET}  ${DIM}or${RESET}  ${MAGENTA}\"Connect all my apps\"${RESET}"
+  if [ -n "$MCP_EX2" ]; then
+    echo -e "  ${MAGENTA}\"${MCP_EX1}\"${RESET}  ${DIM}or${RESET}  ${MAGENTA}\"${MCP_EX2}\"${RESET}  ${DIM}or${RESET}  ${MAGENTA}\"Connect all my apps\"${RESET}"
+  else
+    echo -e "  ${MAGENTA}\"${MCP_EX1}\"${RESET}  ${DIM}or${RESET}  ${MAGENTA}\"Connect all my apps\"${RESET}"
+  fi
   echo ""
-  echo -e "${DIM}Claude walks you through each one. No commands to memorize.${RESET}"
+  echo -e "${DIM}No commands. Claude walks you through it.${RESET}"
 fi
 
 sleep 0.5
@@ -484,41 +539,36 @@ sleep 0.8
 # THE FIRST COMMAND — Zero gap to first win (Ryan Magin)
 # ═══════════════════════════════════════════
 
-# Personalized first command based on their tools
-if $USE_GMAIL; then
-  FIRST_CMD="Read my emails and tell me what's urgent."
-  FIRST_WHAT="It will open your Gmail, scan every unread email, and give you a priority list. In 30 seconds."
-elif $USE_GCAL; then
-  FIRST_CMD="What's on my calendar today? What should I focus on?"
-  FIRST_WHAT="It will read your calendar and tell you exactly how to spend your day."
-elif $USE_NOTION; then
-  FIRST_CMD="Look at my Notion and tell me what I should work on today."
-  FIRST_WHAT="It will scan your workspace and find your priorities."
-else
-  FIRST_CMD="Here's what I do every day: ${USER_HATES}. Help me automate the worst one."
-  FIRST_WHAT="It will pick your most painful task and build a solution. Right now. In front of you."
-fi
-
-echo -e "${BOLD}Now open Claude Code and say this:${RESET}"
+# FIRST COMMAND = THEIR PAIN (Steve Jobs: the product solves YOUR problem)
+# The user told us what they hate. That's the first thing Claude fixes.
+echo -e "${BOLD}Open Claude Code and say exactly this:${RESET}"
 echo ""
-echo -e "  ${MAGENTA}${BOLD}\"${FIRST_CMD}\"${RESET}"
+echo -e "  ${MAGENTA}${BOLD}\"I hate ${USER_HATES}. Fix this for me.\"${RESET}"
 echo ""
-echo -e "  ${DIM}${FIRST_WHAT}${RESET}"
+echo -e "  ${DIM}Claude will ask you a few questions, then build a solution.${RESET}"
+echo -e "  ${DIM}Not a suggestion. An actual working system. Watch.${RESET}"
 echo ""
 
 sleep 0.5
 
-# ═══════════════════════════════════════════
-# THROW ROCKS AT ENEMIES (Blair Warren)
-# ═══════════════════════════════════════════
+# Second command — use their actual tools
+SECOND_CMD=""
+if $USE_GMAIL; then
+  SECOND_CMD="Read my last 20 emails and tell me what actually needs my attention."
+elif $USE_GCAL; then
+  SECOND_CMD="Look at my calendar this week and tell me where I'm wasting time."
+elif $USE_NOTION; then
+  SECOND_CMD="Look at my Notion and tell me what I should work on right now."
+elif $USE_GITHUB; then
+  SECOND_CMD="Look at my repos and tell me what needs attention."
+fi
 
-echo -e "${BOLD}Then try this:${RESET}"
-echo ""
-echo -e "  ${MAGENTA}${BOLD}\"What else can you do that would blow my mind?\"${RESET}"
-echo ""
-echo -e "  ${DIM}While everyone else is still doing it by hand,${RESET}"
-echo -e "  ${DIM}you just got an assistant that never sleeps.${RESET}"
-echo ""
+if [ -n "$SECOND_CMD" ]; then
+  echo -e "${BOLD}Then try:${RESET}"
+  echo ""
+  echo -e "  ${MAGENTA}${BOLD}\"${SECOND_CMD}\"${RESET}"
+  echo ""
+fi
 
 sleep 0.5
 
@@ -528,18 +578,13 @@ sleep 0.5
 
 echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
-echo -e "${DIM}The full manual is in README.md — read it when you're curious.${RESET}"
-echo -e "${DIM}But you don't need it right now.${RESET}"
+echo -e "${BOLD}One more thing, ${USER_NAME}.${RESET}"
 echo ""
-echo -e "${BOLD}One more thing, ${USER_NAME}:${RESET}"
-echo -e "Talk to Claude like you'd talk to a friend."
-echo -e "Not keywords. Not commands. Just ${BOLD}say what you need${RESET}."
-echo -e "${DIM}\"I've got 3 hours of meetings today and need to prep for all of them.\"${RESET}"
-echo -e "${DIM}\"My inbox is a disaster. Help me figure out what actually matters.\"${RESET}"
-echo -e "${DIM}\"I hate doing this manually every week. Build me something.\"${RESET}"
+echo -e "Talk to Claude like a friend. Not keywords. Just say what you need."
 echo ""
-echo -e "${DIM}The more you talk, the more it can do. Don't hold back.${RESET}"
+echo -e "${DIM}\"I hate doing this manually. Build me something.\"${RESET}"
+echo -e "${DIM}\"What can you do that would blow my mind?\"${RESET}"
 echo ""
-echo -e "${GREEN}${BOLD}Welcome, ${USER_NAME}. Your AI is ready.${RESET}"
-echo -e "${GREEN}${BOLD}Go build something dangerous.${RESET}"
+sleep 0.5
+echo -e "${GREEN}${BOLD}Welcome, ${USER_NAME}. Go build something dangerous.${RESET}"
 echo ""
