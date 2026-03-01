@@ -247,8 +247,25 @@ echo ""
 sleep 0.5
 
 # Auto-launch first-run experience (the Speed to Post moment)
-if [ -f "$SCRIPT_DIR/first-run.sh" ]; then
+# Only launch if we're in an interactive terminal (not piped through Claude Code)
+if [ -f "$SCRIPT_DIR/first-run.sh" ] && [ -t 0 ]; then
   bash "$SCRIPT_DIR/first-run.sh"
+elif [ -f "$SCRIPT_DIR/first-run.sh" ] && [ ! -t 0 ]; then
+  echo ""
+  echo "╔══════════════════════════════════════════════════════╗"
+  echo "║  ✅ INSTALLATION COMPLETE                            ║"
+  echo "╠══════════════════════════════════════════════════════╣"
+  echo "║                                                      ║"
+  echo "║  Files installed. Hooks active.                      ║"
+  echo "║                                                      ║"
+  echo "║  Now run the onboarding in Terminal.app or iTerm:    ║"
+  echo "║                                                      ║"
+  echo "║    cd $(echo "$SCRIPT_DIR" | sed "s|$HOME|~|")       ║"
+  echo "║    bash first-run.sh                                 ║"
+  echo "║                                                      ║"
+  echo "║  5 questions. 5 minutes. Then Jarvis comes online.   ║"
+  echo "║                                                      ║"
+  echo "╚══════════════════════════════════════════════════════╝"
 else
   # Fallback if first-run.sh missing
   echo "╔══════════════════════════════════════════════════════╗"

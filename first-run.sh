@@ -9,6 +9,31 @@ CLAUDE_DIR="$HOME/.claude"
 CLAUDE_MD="$CLAUDE_DIR/CLAUDE.md"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# ═══════════════════════════════════════════
+# INTERACTIVE TERMINAL CHECK
+# This script asks 5 questions — it NEEDS a real terminal.
+# If run through Claude Code's Bash tool or a pipe, bail out
+# with a clear message instead of silently using empty defaults.
+# ═══════════════════════════════════════════
+if [ ! -t 0 ]; then
+  echo ""
+  echo "╔══════════════════════════════════════════════════════╗"
+  echo "║  This script needs an interactive terminal.          ║"
+  echo "╠══════════════════════════════════════════════════════╣"
+  echo "║                                                      ║"
+  echo "║  It asks 5 questions to personalize your setup.      ║"
+  echo "║  Claude Code's Bash tool can't handle that.          ║"
+  echo "║                                                      ║"
+  echo "║  Open Terminal.app or iTerm and run:                 ║"
+  echo "║                                                      ║"
+  echo "║    cd ~/Desktop/claude-code-starter-kit              ║"
+  echo "║    bash first-run.sh                                 ║"
+  echo "║                                                      ║"
+  echo "╚══════════════════════════════════════════════════════╝"
+  echo ""
+  exit 1
+fi
+
 # Colors
 BOLD='\033[1m'
 DIM='\033[2m'
