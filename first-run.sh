@@ -536,80 +536,113 @@ echo ""
 sleep 0.8
 
 # ═══════════════════════════════════════════
-# THE FIRST COMMAND — Zero gap to first win (Ryan Magin)
+# THE QUICK WIN (Walt Disney: never break the spell)
+# Don't SAY what Claude can do. SHOW them. Right here. Right now.
+# The ride doesn't stop — it accelerates.
 # ═══════════════════════════════════════════
-
-# ═══════════════════════════════════════════
-# THE LAUNCH — Zero gap to first win
-# Don't tell them to "open Claude Code."
-# OPEN IT FOR THEM. Copy their first command. Go.
-# ═══════════════════════════════════════════
-
-FIRST_PROMPT="I hate ${USER_HATES}. Fix this for me. Build me a system that handles this automatically."
-
-echo -e "${BOLD}One more thing, ${USER_NAME}.${RESET}"
-echo ""
-echo -e "Talk to Claude like a friend. Not keywords. Just say what you need."
-echo ""
-sleep 0.5
 
 echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
 
 if command -v claude &>/dev/null; then
-  # Claude Code exists — offer to launch it RIGHT NOW
-  echo -e "${GREEN}${BOLD}Ready to see it work?${RESET}"
+  echo -e "${BOLD}Now watch this.${RESET}"
   echo ""
-  echo -e "I'm going to open Claude Code and paste your first command:"
-  echo ""
-  echo -e "  ${MAGENTA}${BOLD}\"${FIRST_PROMPT}\"${RESET}"
-  echo ""
-  echo -ne "${YELLOW}Launch Claude Code now? (Y/n): ${RESET}"
-  read LAUNCH_YN
-  LAUNCH_YN=$(echo "$LAUNCH_YN" | tr '[:upper:]' '[:lower:]')
+  sleep 0.8
 
-  if [ "$LAUNCH_YN" = "n" ] || [ "$LAUNCH_YN" = "no" ]; then
+  # Build the quick win prompt — specific, visual, uses their actual data
+  # This runs non-interactive (claude -p) and shows the result RIGHT HERE
+  QUICK_WIN_PROMPT="I just set up Claude Code. My name is ${USER_NAME}. Read my ~/.claude/CLAUDE.md — you'll see my profile. Then do exactly this:
+
+1. Show me a short table: what you found about me (name, pain points, tools detected, communication style)
+2. Based on what I hate doing (\"${USER_HATES}\"), give me the ONE specific thing you're going to automate for me FIRST. Be specific — not 'I can help with email' but 'Here's the exact workflow I'll build for you.'
+3. Pick my most useful detected app and show me ONE real command I can run right now.
+
+Keep it short. Make it personal. Show me you actually know me."
+
+  echo -ne "  ${DIM}Waking up Claude"
+  for i in 1 2 3; do sleep 0.4; echo -ne "."; done
+  echo -e "${RESET}"
+  echo ""
+
+  # Run the quick win — Claude reads their profile and responds
+  claude -p "$QUICK_WIN_PROMPT" 2>/dev/null
+
+  QUICK_WIN_EXIT=$?
+
+  if [ $QUICK_WIN_EXIT -eq 0 ]; then
+    # Quick win worked — Claude just showed them magic
     echo ""
-    echo -e "${DIM}No rush. When you're ready, just run:${RESET}"
+    echo -e "${ORANGE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo ""
-    echo -e "  ${BOLD}claude${RESET}"
+    echo -e "${GREEN}${BOLD}That just happened. In your terminal.${RESET}"
     echo ""
-    # Copy to clipboard anyway
-    if command -v pbcopy &>/dev/null; then
-      echo -n "$FIRST_PROMPT" | pbcopy
-      echo -e "${DIM}(Your first command is on your clipboard — just paste it.)${RESET}"
-    fi
-    echo ""
-    echo -e "${GREEN}${BOLD}Welcome, ${USER_NAME}. Go build something dangerous.${RESET}"
-    echo ""
-  else
-    echo ""
-    # Copy first command to clipboard so they can paste it
-    if command -v pbcopy &>/dev/null; then
-      echo -n "$FIRST_PROMPT" | pbcopy
-      echo -e "${GREEN}${BOLD}Copied to clipboard. Just paste when Claude opens.${RESET}"
-    else
-      echo -e "${DIM}Say this: \"${FIRST_PROMPT}\"${RESET}"
-    fi
+    echo -e "Claude read your profile, understood your pain, and gave you a plan."
+    echo -e "${DIM}No copy-paste. No setup. It just works.${RESET}"
     echo ""
     sleep 1
-    echo -e "${GREEN}${BOLD}Launching Claude Code...${RESET}"
+
+    echo -e "${BOLD}Ready to go deeper? This opens a full conversation.${RESET}"
+    echo -e "${DIM}Talk like a friend. Say what you need. Claude handles the rest.${RESET}"
     echo ""
-    sleep 0.5
-    # Launch Claude Code — this replaces the current process
-    exec claude
+    echo -ne "${YELLOW}Open Claude Code now? (Y/n): ${RESET}"
+    read LAUNCH_YN
+    LAUNCH_YN=$(echo "$LAUNCH_YN" | tr '[:upper:]' '[:lower:]')
+
+    if [ "$LAUNCH_YN" = "n" ] || [ "$LAUNCH_YN" = "no" ]; then
+      echo ""
+      echo -e "${DIM}Whenever you're ready:${RESET}"
+      echo ""
+      echo -e "  ${BOLD}claude${RESET}"
+      echo ""
+      echo -e "${GREEN}${BOLD}Welcome, ${USER_NAME}. Go build something dangerous.${RESET}"
+      echo ""
+    else
+      echo ""
+      echo -e "${GREEN}${BOLD}Let's go.${RESET}"
+      echo ""
+      sleep 0.5
+      exec claude
+    fi
+  else
+    # claude -p failed (no API key, rate limit, etc.) — fall back to launch
+    echo ""
+    echo -e "${DIM}(Couldn't run the preview — that's OK, you'll see it live.)${RESET}"
+    echo ""
+
+    FIRST_PROMPT="My name is ${USER_NAME}. I just set up Claude Code. I hate ${USER_HATES}. Read my ~/.claude/CLAUDE.md to see my full profile, then build me a system to fix my biggest pain point."
+
+    if command -v pbcopy &>/dev/null; then
+      echo -n "$FIRST_PROMPT" | pbcopy
+    fi
+
+    echo -e "${BOLD}Let's launch Claude Code.${RESET}"
+    echo -e "${DIM}Your first command is on your clipboard — just paste it.${RESET}"
+    echo ""
+    echo -ne "${YELLOW}Launch now? (Y/n): ${RESET}"
+    read LAUNCH_YN
+    LAUNCH_YN=$(echo "$LAUNCH_YN" | tr '[:upper:]' '[:lower:]')
+
+    if [ "$LAUNCH_YN" = "n" ] || [ "$LAUNCH_YN" = "no" ]; then
+      echo ""
+      echo -e "  ${BOLD}claude${RESET}"
+      echo ""
+      echo -e "${GREEN}${BOLD}Welcome, ${USER_NAME}. Go build something dangerous.${RESET}"
+      echo ""
+    else
+      echo ""
+      sleep 0.5
+      exec claude
+    fi
   fi
 else
-  # Claude Code not installed yet
-  echo -e "${BOLD}Now install Claude Code and say this:${RESET}"
-  echo ""
-  echo -e "  ${MAGENTA}${BOLD}\"${FIRST_PROMPT}\"${RESET}"
-  echo ""
-  echo -e "${DIM}Install:${RESET}"
+  # Claude Code not installed
+  echo -e "${BOLD}Almost there. Install Claude Code:${RESET}"
   echo ""
   echo -e "  ${BOLD}npm install -g @anthropic-ai/claude-code${RESET}"
   echo ""
-  echo -e "${DIM}Then just type ${BOLD}claude${RESET}${DIM} and paste that command.${RESET}"
+  echo -e "Then type ${BOLD}claude${RESET} and say:"
+  echo ""
+  echo -e "  ${MAGENTA}\"I hate ${USER_HATES}. Fix this for me.\"${RESET}"
   echo ""
   echo -e "${GREEN}${BOLD}Welcome, ${USER_NAME}. Go build something dangerous.${RESET}"
   echo ""
