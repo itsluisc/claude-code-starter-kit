@@ -263,7 +263,7 @@ elif [ -f "$SCRIPT_DIR/first-run.sh" ] && [ ! -t 0 ]; then
   echo "║    cd $(echo "$SCRIPT_DIR" | sed "s|$HOME|~|")       ║"
   echo "║    bash first-run.sh                                 ║"
   echo "║                                                      ║"
-  echo "║  5 questions. 5 minutes. Then Jarvis comes online.   ║"
+  echo "║  5 questions. 5 minutes. Then Claude is yours.       ║"
   echo "║                                                      ║"
   echo "╚══════════════════════════════════════════════════════╝"
 else
