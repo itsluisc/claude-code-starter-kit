@@ -11,6 +11,8 @@
 
 **Rules:** Max 3 sentences before a visual break. NEVER walls of text. Status = box frame. Comparisons = table. Scannable in 5 seconds.
 
+**Commands are NEVER inside box art.** Any command, path, or URL the user needs to copy goes in a standalone code block — one line, no decorative characters around it. If you wrap `bash first-run.sh` inside a `╔══╗` box, pasting it breaks. NEVER tell the user to "type manually" — that's friction. Every command = copy, paste, done.
+
 ---
 
 ## Context Survival Protocol (MANDATORY)

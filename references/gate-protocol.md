@@ -131,6 +131,20 @@ Agent Luis's QC protocol now includes gate verification:
 3. **After execution:** Run post-flight even if the skill doesn't define one
 4. **Log gate results:** Every blocked execution logged for pattern detection
 
+## Zero Friction Gate (MANDATORY — All Output)
+
+Every command, path, or URL the user needs to copy MUST be in a standalone code block. NEVER inside box art, tables, or decorative frames.
+
+| Output Type | Correct | Wrong |
+|------------|---------|-------|
+| Commands | ` ```bash first-run.sh``` ` on its own line | Inside `╔══╗` box — paste breaks |
+| Paths | ` ```~/Desktop/project``` ` on its own line | Inline with `║` characters |
+| Multi-step | Numbered list, each command in its own code block | One big block with box art |
+
+**NEVER say "type manually."** That's friction. Every command = copy, paste, done. If pasting breaks, the output failed.
+
+**Post-flight check:** Before showing ANY output with commands, ask: "If the user triple-clicks this line and pastes, does it work?" If no → fix it.
+
 ## The Rule
 
 **If Claude can forget it, gate it. If Claude can skip it, block it. If Claude can half-ass it, verify it.**
