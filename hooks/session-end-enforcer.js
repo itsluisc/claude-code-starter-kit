@@ -1,17 +1,18 @@
 #!/usr/bin/env node
-// Session End Enforcer v4 — PostToolUse hook
+// Session End Enforcer v5 — PostToolUse hook
 //
-// v4: ENFORCER, NOT NAGGER. Does not "suggest" — COMMANDS.
+// v5: VERIFY, DON'T TRUST. Checks files EXIST on disk, not just tool calls.
 // Tracks: supermemory, session-log, session state, git, notion, MEMORY.md, content ideas
 //
-// KEY CHANGE from v3:
-// - Added session-log tracking (~/Desktop/_Code/session-logs/)
-// - Fires VERIFICATION TABLE when session is winding down
-// - Uses COMMAND language, not suggestion language
-// - Detects "ending" signals: low context remaining, "done"/"bye" in user messages
+// KEY CHANGES from v4:
+// - FILE VERIFICATION: checks disk, not just tool-call tracking
+// - Session state: verifies /tmp/claude-session-state.md exists + is fresh
+// - Git: verifies working tree is clean (committed)
+// - Session log: verifies today's log exists in session-logs/
+// - MEMORY.md: verifies file was recently modified
 // - Every 15 tool calls (not 10) to reduce noise but INCREASE impact
 //
-// Built: Feb 26, 2026 (v3). Upgraded: Feb 28, 2026 (v4 — enforcer mode)
+// Built: Feb 26, 2026 (v3). v4: Feb 28. v5: Feb 28 (file verification)
 
 const fs = require('fs');
 const os = require('os');
@@ -153,15 +154,16 @@ process.stdin.on('end', () => {
     track.lastNagAt = track.toolCalls;
     fs.writeFileSync(trackPath, JSON.stringify(track));
 
-    // Build missing list
+    // v5: Build missing list using DISK VERIFICATION, not just booleans
+    const verified = verifyFilesOnDisk(track);
     const missing = [];
-    if (!track.sessionLog) missing.push('SESSION LOG — Write ~/Desktop/_Code/session-logs/YYYY-MM-DD-topic.md with what was built');
+    if (!verified.stateFile) missing.push('SESSION STATE — write /tmp/claude-session-state.md (not found or stale)');
+    if (!verified.sessionLog) missing.push('SESSION LOG — Write ~/Desktop/_Code/session-logs/YYYY-MM-DD-topic.md');
     if (!track.contentIdeas) missing.push('CONTENT IDEAS — add build insights to DB dace2176-bdfe-4a8f-a054-2886f8a9612e');
     if (!track.supermemory) missing.push('SUPERMEMORY — save key decisions and what was built/learned');
-    if (!track.stateFile) missing.push('SESSION STATE — write /tmp/claude-session-state.md');
-    if (!track.gitCommit) missing.push('GIT COMMIT — commit changes to repo');
+    if (!verified.gitClean) missing.push('GIT COMMIT — uncommitted changes detected on disk');
     if (track.gitCommit && !track.gitPush) missing.push('GIT PUSH — committed but NOT pushed');
-    if (!track.memoryMd) missing.push('MEMORY.md — update if stable patterns learned');
+    if (!verified.memoryMd) missing.push('MEMORY.md — not updated this session');
 
     if (missing.length > 0) {
       emit(
@@ -182,20 +184,78 @@ function buildVerificationTable(track) {
   const yes = '✅';
   const no = '❌';
 
-  return `BACKUP VERIFICATION — ${date}\n` +
+  // v5: VERIFY files on disk, not just tool-call booleans
+  const verified = verifyFilesOnDisk(track);
+
+  return `BACKUP VERIFICATION — ${date} (v5 — file-verified)\n` +
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
     `ALWAYS (every session with builds):\n` +
-    `| Session Log          | ${track.sessionLog ? yes : no}  |\n` +
-    `| Supermemory          | ${track.supermemory ? yes : no}  |\n` +
-    `| Session State        | ${track.stateFile ? yes : no}  |\n` +
-    `| Content Ideas        | ${track.contentIdeas ? yes : no}  |\n` +
+    `| Session State (disk) | ${verified.stateFile ? yes : no}  |\n` +
+    `| Session Log (disk)   | ${verified.sessionLog ? yes : no}  |\n` +
+    `| Supermemory (API)    | ${track.supermemory ? yes : no}  |\n` +
+    `| Content Ideas (API)  | ${track.contentIdeas ? yes : no}  |\n` +
     `\n` +
     `IF CODE CHANGED:\n` +
-    `| Git Commit           | ${track.gitCommit ? yes : no}  |\n` +
-    `| Git Push             | ${track.gitPush ? yes : no}  |\n` +
-    `| MEMORY.md            | ${track.memoryMd ? yes : no}  |\n` +
-    `| Notion               | ${track.notion ? yes : no}  |\n` +
+    `| Git Clean (disk)     | ${verified.gitClean ? yes : no}  |\n` +
+    `| Git Push (tracked)   | ${track.gitPush ? yes : no}  |\n` +
+    `| MEMORY.md (disk)     | ${verified.memoryMd ? yes : no}  |\n` +
+    `| Notion (API)         | ${track.notion ? yes : no}  |\n` +
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+}
+
+function verifyFilesOnDisk(track) {
+  const { execSync } = require('child_process');
+  const result = {
+    stateFile: false,
+    sessionLog: false,
+    gitClean: false,
+    memoryMd: false
+  };
+
+  // Check session state file exists AND is recent (< 2 hours)
+  try {
+    const statePath = '/tmp/claude-session-state.md';
+    if (fs.existsSync(statePath)) {
+      const stat = fs.statSync(statePath);
+      const ageMin = (Date.now() - stat.mtimeMs) / (1000 * 60);
+      result.stateFile = ageMin < 120; // must be < 2 hours old
+    }
+  } catch (e) {}
+
+  // Check session log for today exists
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const logDir = path.join(os.homedir(), 'Desktop', '_Code', 'session-logs');
+    if (fs.existsSync(logDir)) {
+      const files = fs.readdirSync(logDir);
+      result.sessionLog = files.some(f => f.startsWith(today));
+    }
+  } catch (e) {}
+
+  // Check git working tree is clean (no uncommitted changes)
+  try {
+    const status = execSync('git status --porcelain 2>/dev/null', {
+      timeout: 3000,
+      encoding: 'utf8'
+    }).trim();
+    result.gitClean = status.length === 0;
+  } catch (e) {
+    // Not a git repo or git not available — skip
+    result.gitClean = true;
+  }
+
+  // Check MEMORY.md was modified today
+  try {
+    const memPath = path.join(os.homedir(), '.claude', 'projects');
+    // Find any MEMORY.md modified in last 4 hours
+    const found = execSync(
+      `find "${memPath}" -name "MEMORY.md" -mmin -240 2>/dev/null | head -1`,
+      { timeout: 3000, encoding: 'utf8' }
+    ).trim();
+    result.memoryMd = found.length > 0;
+  } catch (e) {}
+
+  return result;
 }
 
 function emit(message) {

@@ -20,6 +20,41 @@ HOOKS_DIR="$CLAUDE_DIR/hooks"
 REFS_DIR="$CLAUDE_DIR/references"
 SETTINGS="$CLAUDE_DIR/settings.json"
 
+# ═══════════════════════════════════════════
+# 0. PRE-FLIGHT CHECKS (Dave: Gate Everything)
+# ═══════════════════════════════════════════
+PREFLIGHT_PASS=true
+
+# Check Node.js (required for hooks)
+if command -v node &>/dev/null; then
+  NODE_VERSION=$(node --version 2>/dev/null)
+  NODE_OK="✅ Node.js $NODE_VERSION"
+else
+  NODE_OK="❌ Node.js — NOT FOUND (hooks won't work)"
+  PREFLIGHT_PASS=false
+fi
+
+# Check git (required for save protocol)
+if command -v git &>/dev/null; then
+  GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
+  GIT_OK="✅ Git $GIT_VERSION"
+else
+  GIT_OK="⚠️  Git — not found (save protocol limited)"
+fi
+
+# Check Claude Code CLI
+if command -v claude &>/dev/null; then
+  CLAUDE_OK="✅ Claude Code installed"
+else
+  CLAUDE_OK="⚠️  Claude Code CLI — not found (install: npm i -g @anthropic-ai/claude-code)"
+fi
+
+# Check source files exist
+if [ ! -d "$SCRIPT_DIR/hooks" ] || [ ! -d "$SCRIPT_DIR/references" ] || [ ! -d "$SCRIPT_DIR/shared" ]; then
+  echo "❌ Missing source directories. Run from the starter kit root."
+  exit 1
+fi
+
 echo ""
 echo "╔══════════════════════════════════════════════════════╗"
 echo "║  Claude Code Starter Kit — Installer                 ║"
@@ -29,9 +64,19 @@ echo "║  • 5 hooks (context, cost, ship, boot, enforcer)     ║"
 echo "║  • 3 reference docs (gates, backups, docs-first)     ║"
 echo "║  • 2 shared configs (quality gates, tool stack)       ║"
 echo "║  • Hook settings in settings.json                    ║"
-echo "║  • CLAUDE.md template (optional)                     ║"
+echo "╠══════════════════════════════════════════════════════╣"
+echo "║  Pre-flight checks:                                  ║"
+echo "║  $NODE_OK"
+echo "║  $GIT_OK"
+echo "║  $CLAUDE_OK"
 echo "╚══════════════════════════════════════════════════════╝"
 echo ""
+
+if [ "$PREFLIGHT_PASS" = false ]; then
+  echo "❌ Pre-flight FAILED. Install Node.js first: https://nodejs.org"
+  echo "   Hooks are JavaScript — they need Node to run."
+  exit 1
+fi
 
 # ═══════════════════════════════════════════
 # 1. CREATE DIRECTORIES
@@ -139,10 +184,64 @@ SETTINGS_EOF
 fi
 
 # ═══════════════════════════════════════════
-# 6. PLUMBING DONE — LAUNCH THE EXPERIENCE
+# 6. POST-FLIGHT VERIFICATION (Dave: Verify Everything)
 # ═══════════════════════════════════════════
 echo ""
-echo "✅ All files installed. Hooks active. Systems ready."
+echo "🔍 Verifying installation..."
+INSTALL_OK=true
+INSTALLED=0
+FAILED=0
+
+# Verify hooks
+for hook in context-survival.js cost-guardian.js ship-tracker.js smart-boot.js session-end-enforcer.js; do
+  if [ -f "$HOOKS_DIR/$hook" ]; then
+    INSTALLED=$((INSTALLED + 1))
+  else
+    echo "   ❌ Missing: hooks/$hook"
+    INSTALL_OK=false
+    FAILED=$((FAILED + 1))
+  fi
+done
+
+# Verify references
+for ref in "$SCRIPT_DIR/references/"*.md; do
+  filename=$(basename "$ref")
+  if [ -f "$REFS_DIR/$filename" ]; then
+    INSTALLED=$((INSTALLED + 1))
+  else
+    echo "   ❌ Missing: references/$filename"
+    INSTALL_OK=false
+    FAILED=$((FAILED + 1))
+  fi
+done
+
+# Verify shared configs
+for shared in "$SCRIPT_DIR/shared/"*.md; do
+  filename=$(basename "$shared")
+  if [ -f "$CLAUDE_DIR/skills/_shared/$filename" ]; then
+    INSTALLED=$((INSTALLED + 1))
+  else
+    echo "   ❌ Missing: shared/$filename"
+    INSTALL_OK=false
+    FAILED=$((FAILED + 1))
+  fi
+done
+
+# Verify settings.json exists
+if [ -f "$SETTINGS" ]; then
+  INSTALLED=$((INSTALLED + 1))
+else
+  echo "   ❌ Missing: settings.json"
+  INSTALL_OK=false
+  FAILED=$((FAILED + 1))
+fi
+
+echo ""
+if [ "$INSTALL_OK" = true ]; then
+  echo "✅ POST-FLIGHT PASSED — $INSTALLED/$INSTALLED files verified."
+else
+  echo "⚠️  POST-FLIGHT: $INSTALLED installed, $FAILED failed. Check errors above."
+fi
 echo ""
 sleep 0.5
 
